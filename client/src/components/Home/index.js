@@ -22,7 +22,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 
-//const serverURL = "http://ov-research-4.uwaterloo.ca:3032";
+const serverURL = "http://ov-research-4.uwaterloo.ca:3032";
 
 const opacityValue = 0.9;
 

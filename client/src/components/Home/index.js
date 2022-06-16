@@ -8,19 +8,18 @@ import Radio from '@material-ui/core/Radio';
 import { createTheme, ThemeProvider, styled } from '@material-ui/core/styles';
 import Typography from "@material-ui/core/Typography";
 import Input from '@material-ui/core/Input';
-
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
-
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Box from "@material-ui/core/Box";
 import { Dialog } from '@material-ui/core';
-
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 
 const serverURL = "http://ov-research-4.uwaterloo.ca:3032";
 
@@ -55,28 +54,38 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     "& > *": {
       margin: theme.spacing(-1),
-      width: "30ch"
+      width: 500,
     },
     '& .MuiTextField-root': {
       margin: theme.spacing(1),
-      width: '30ch',
+      width: 500,
     },
   },
   paper: {
     height: 140,
-    width: 100,
+    width: 500,
   },
   control: {
     padding: theme.spacing(3),
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 200,
+    minWidth: 500,
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
-
+  bullet: {
+    display: 'inline-block',
+    margin: '0 2px',
+    transform: 'scale(0.8)',
+  },
+  title: {
+    fontSize: 400,
+  },
+  pos: {
+    marginBottom: 12,
+  },
 }));
 
 const movies = [
@@ -106,6 +115,8 @@ const movies = [
   }
 ]
 
+const initialReviews = [
+]
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -120,8 +131,6 @@ const MenuProps = {
 
 
 export default function SpacingGrid() {
-
-
   const classes = useStyles();
 
   const [spacing, setSpacing] = React.useState([]);
@@ -131,6 +140,7 @@ export default function SpacingGrid() {
 
   const handleRatingChange = (event) => {
     setSpacing(Number(event.target.value));
+
   };
 
   const handleMovieChange = (event) => {
@@ -164,15 +174,29 @@ export default function SpacingGrid() {
     } else {
       setOpen(true);
       setDummy(33);
+      const d = {
+        movieTitle: movieName,
+        rating: spacing,
+        reviewTitle: reviewTitle,
+        reviewBody: userReview,
+      }
+      initialReviews.push(d);
+
     }
   }
 
   const handleToClose = () => {
     setOpen(false);
+    if (dummy == 33) {
+      setMovieName('');
+      setReviewTitle("");
+      setUserReview("");
+      setSpacing([]);
+    }
   }
 
   return (
-   <ThemeProvider theme={lightTheme}>
+    <ThemeProvider theme={lightTheme}>
       <Box
         sx={{
           height: '100vh',
@@ -180,13 +204,13 @@ export default function SpacingGrid() {
           overflow: "hidden",
           //backgroundColor: lightTheme.palette.background.default,
           //backgroundImage: `url(${BackgroundImage})`,
-          //backgroundImage: `url(https://www.treehugger.com/thmb/huWogB9GGnLTMn-MmpMxlWos_BE=/2500x1881/filters:fill(auto,1)/__opt__aboutcom__coeus__resources__content_migration__mnn__images__2019__12__ParadiseExterior-13-c8711698f75e4ca9b8b7673989362a57.jpg)`,
+          backgroundImage: `url(https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80)`,
           backgroundSize: "cover"
         }}
       >
         <MainGridContainer
           container
-          spacing={1}
+          spacing={5}
           style={{ maxWidth: '50%' }}
           direction="column"
           justify="flex-start"
@@ -217,26 +241,34 @@ export default function SpacingGrid() {
 
           <Grid container>
             <ReviewBody
+              classes={classes}
               userReview={userReview}
               onEntry={handleReviewEntry} />
           </Grid>
-
+          <br />
           <Grid container>
             <ReviewRating
+              classes={classes}
               spacing={spacing}
               handleChange={handleRatingChange}
               movieName={movieName}
             />
           </Grid>
-
+          <br />
           <Grid container>
             <Button variant="contained" color="secondary" onClick={handleClickSubmit}>
               Submit
             </Button>
-            <DialogBox 
-            open={open}
-            handleToClose={handleToClose}
-            id={dummy}
+            <DialogBox
+              open={open}
+              handleToClose={handleToClose}
+              id={dummy}
+            />
+          </Grid>
+
+          <Grid container>
+            <Reviews
+              classes={classes}
             />
           </Grid>
 
@@ -247,15 +279,43 @@ export default function SpacingGrid() {
   );
 }
 
-const DialogBox = ({id,open, handleToClose}) => {
+const Reviews = (classes) => {
+  return (
+    <ul>
+      {initialReviews.map((item) => {
+        return (
+          <Card className={classes.root} variant="outlined">
+            <CardContent>
+              <Typography variant="h6" component="h2">
+                {"Movie: " + item.movieTitle}
+              </Typography>
+              <Typography variant="h4" component="h2">
+                {item.reviewTitle}
+              </Typography>
+              <Typography variant="h6" component="h2">
+                {"Rating: " + item.rating}
+                <br />
+                {"User Review: "}
+                <br />
+                {item.reviewBody}
+              </Typography>
+            </CardContent>
+          </Card>
+        )
+      })}
+    </ul>
+  )
+}
+
+const DialogBox = ({ id, open, handleToClose }) => {
   const msg = [
     'Please enter your review',
     'Please enter your review title',
     'Please enter your rating',
-    'Your review has been Received!',
+    'Your review has been received!',
     'Please select a movie for review!'
   ]
-  
+
   var d;
 
   if (id == 1) {
@@ -264,9 +324,9 @@ const DialogBox = ({id,open, handleToClose}) => {
     d = msg[1];
   } else if (id == 3) {
     d = msg[2];
-  } else if (id ==4) {
+  } else if (id == 4) {
     d = msg[4];
-  }else {
+  } else {
     d = msg[3];
   }
 
@@ -292,9 +352,10 @@ const DialogBox = ({id,open, handleToClose}) => {
 const MovieSelection = ({ handleChange, classes, movieName }) => {
   return (
     <>
-      <FormControl className={classes.formControl}>
+      <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel id="movies-list">Select Movies</InputLabel>
         <Select
+          required
           labelId="movies-list"
           id="movies-list"
           value={movieName}
@@ -303,7 +364,7 @@ const MovieSelection = ({ handleChange, classes, movieName }) => {
           MenuProps={MenuProps}
         >
           {movies.map((movie) => (
-            <option key={movie.id} value={movie.id}>
+            <option key={movie.id} value={movie.title}>
               {movie.title}
             </option>
           ))}
@@ -313,28 +374,31 @@ const MovieSelection = ({ handleChange, classes, movieName }) => {
   )
 }
 
-const ReviewRating = ({ spacing, handleChange }) => {
+const ReviewRating = ({ classes, spacing, handleChange }) => {
   return (
     <>
-      <Grid item>
-        <FormLabel>Rating</FormLabel>
-        <RadioGroup
-          name="Rating"
-          aria-label="Rating"
-          value={spacing.toString()}
-          onChange={handleChange}
-          row
-        >
-          {[1, 2, 3, 4, 5].map((value) => (
-            <FormControlLabel
-              key={value}
-              value={value.toString()}
-              control={<Radio />}
-              label={value.toString()}
-            />
-          ))}
-        </RadioGroup>
-      </Grid>
+      <form className={classes.root} noValidate autoComplete="off">
+        <Grid item>
+          <FormLabel>Rating</FormLabel>
+          <RadioGroup
+            name="Rating"
+            aria-label="Rating"
+            value={spacing.toString()}
+            onChange={handleChange}
+            row
+          >
+            {[1, 2, 3, 4, 5].map((value) => (
+              <FormControlLabel
+                key={value}
+                value={value.toString()}
+                control={<Radio />}
+                label={value.toString()}
+              />
+            ))}
+          </RadioGroup>
+        </Grid>
+      </form>
+
     </>
   )
 }
@@ -344,9 +408,10 @@ const ReviewTitle = ({ reviewTitle, classes, onEntry }) => {
     <>
       <form className={classes.root} noValidate autoComplete="off">
         <TextField
+          required
           id="review-title"
           label="Review Title"
-          variant="filled"
+          variant="outlined"
           onChange={onEntry}
           value={reviewTitle}
         />
@@ -355,18 +420,23 @@ const ReviewTitle = ({ reviewTitle, classes, onEntry }) => {
   )
 }
 
-const ReviewBody = ({ onEntry, userReview }) => {
+const ReviewBody = ({ classes, onEntry, userReview }) => {
   return (
     <>
-      <TextField
-        id="outlined-multiline-static"
-        label="Enter a Review"
-        multiline
-        rows={4}
-        value={userReview}
-        onChange={onEntry}
-        variant="outlined"
-      />
+      <form className={classes.root} noValidate autoComplete="off">
+        <TextField
+          id="outlined-multiline-static"
+          label="Enter a Review"
+          multiline
+          required
+          rows={4}
+          value={userReview}
+          onChange={onEntry}
+          variant="outlined"
+        />
+      </form>
+
     </>
   )
 }
+

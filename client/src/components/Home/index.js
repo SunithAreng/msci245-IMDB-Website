@@ -5,10 +5,9 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
-import Paper from '@material-ui/core/Paper';
 import { createTheme, ThemeProvider, styled } from '@material-ui/core/styles';
 import Typography from "@material-ui/core/Typography";
-
+import Input from '@material-ui/core/Input';
 
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -17,12 +16,15 @@ import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Box from "@material-ui/core/Box";
+import { Dialog } from '@material-ui/core';
 
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
 
 const serverURL = "http://ov-research-4.uwaterloo.ca:3032";
 
 const opacityValue = 0.9;
-
 
 const lightTheme = createTheme({
   palette: {
@@ -77,22 +79,100 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+const movies = [
+  {
+    title: 'None',
+    id: 0,
+  },
+  {
+    title: 'Thor: Love and Thunder',
+    id: 1,
+  },
+  {
+    title: 'Kingsman',
+    id: 2,
+  },
+  {
+    title: 'Revenant',
+    id: 3,
+  },
+  {
+    title: 'Ironman',
+    id: 4,
+  },
+  {
+    title: 'Doctor Strange in Multiverse of Madness',
+    id: 5,
+  }
+]
+
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+
 export default function SpacingGrid() {
-  const [spacing, setSpacing] = React.useState(1);
+
+
   const classes = useStyles();
+
+  const [spacing, setSpacing] = React.useState([]);
+  const [movieName, setMovieName] = React.useState([]);
+  const [reviewTitle, setReviewTitle] = React.useState("");
+  const [userReview, setUserReview] = React.useState("");
 
   const handleRatingChange = (event) => {
     setSpacing(Number(event.target.value));
   };
 
-  const [movieName, setMovieName] = React.useState([]);
-
   const handleMovieChange = (event) => {
     setMovieName(event.target.value);
   };
 
+  const handleTitleEntry = (event) => {
+    setReviewTitle(event.target.value);
+  }
+
+  const handleReviewEntry = (event) => {
+    setUserReview(event.target.value);
+  }
+
+  const [open, setOpen] = React.useState(false);
+  const [dummy, setDummy] = React.useState();
+
+  const handleClickSubmit = () => {
+    if (!userReview) {
+      setOpen(true);
+      setDummy(1);
+    } else if (!reviewTitle) {
+      setOpen(true);
+      setDummy(2);
+    } else if (spacing == "") {
+      setOpen(true);
+      setDummy(3);
+    } else if (movieName == "") {
+      setOpen(true);
+      setDummy(4);
+    } else {
+      setOpen(true);
+      setDummy(33);
+    }
+  }
+
+  const handleToClose = () => {
+    setOpen(false);
+  }
+
   return (
-    <ThemeProvider theme={lightTheme}>
+   <ThemeProvider theme={lightTheme}>
       <Box
         sx={{
           height: '100vh',
@@ -130,11 +210,15 @@ export default function SpacingGrid() {
           <Grid container>
             <ReviewTitle
               classes={classes}
+              onEntry={handleTitleEntry}
+              reviewTitle={reviewTitle}
             />
           </Grid>
 
           <Grid container>
-            <ReviewBody />
+            <ReviewBody
+              userReview={userReview}
+              onEntry={handleReviewEntry} />
           </Grid>
 
           <Grid container>
@@ -146,9 +230,14 @@ export default function SpacingGrid() {
           </Grid>
 
           <Grid container>
-            <Button variant="contained" color="secondary">
+            <Button variant="contained" color="secondary" onClick={handleClickSubmit}>
               Submit
             </Button>
+            <DialogBox 
+            open={open}
+            handleToClose={handleToClose}
+            id={dummy}
+            />
           </Grid>
 
         </MainGridContainer>
@@ -158,25 +247,66 @@ export default function SpacingGrid() {
   );
 }
 
+const DialogBox = ({id,open, handleToClose}) => {
+  const msg = [
+    'Please enter your review',
+    'Please enter your review title',
+    'Please enter your rating',
+    'Your review has been Received!',
+    'Please select a movie for review!'
+  ]
+  
+  var d;
+
+  if (id == 1) {
+    d = msg[0];
+  } else if (id == 2) {
+    d = msg[1];
+  } else if (id == 3) {
+    d = msg[2];
+  } else if (id ==4) {
+    d = msg[4];
+  }else {
+    d = msg[3];
+  }
+
+  return (
+    <>
+      <Dialog open={open} onClose={handleToClose}>
+        <DialogContent>
+          <DialogContentText>
+            {d}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleToClose}
+            color="primary" autoFocus>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  )
+}
+
 const MovieSelection = ({ handleChange, classes, movieName }) => {
   return (
     <>
       <FormControl className={classes.formControl}>
-        <InputLabel shrink htmlFor="moviesList">Select Movies</InputLabel>
+        <InputLabel id="movies-list">Select Movies</InputLabel>
         <Select
+          labelId="movies-list"
+          id="movies-list"
           value={movieName}
           onChange={handleChange}
-          inputProps={{
-            name: 'movies',
-            id: 'moviesList',
-          }}
+          input={<Input />}
+          MenuProps={MenuProps}
         >
-          <option value="">None</option>
-          <option value={1}>Kingsman</option>
-          <option value={2}>Crazy Rich Asians</option>
-          <option value={3}>Revenant</option>
-          <option value={4}>Thor: Love and Thunder</option>
-          <option value={5}>Doctor Strange: Multiverse in Madness</option>
+          {movies.map((movie) => (
+            <option key={movie.id} value={movie.id}>
+              {movie.title}
+            </option>
+          ))}
         </Select>
       </FormControl>
     </>
@@ -209,17 +339,23 @@ const ReviewRating = ({ spacing, handleChange }) => {
   )
 }
 
-const ReviewTitle = ({ classes }) => {
+const ReviewTitle = ({ reviewTitle, classes, onEntry }) => {
   return (
     <>
       <form className={classes.root} noValidate autoComplete="off">
-        <TextField id="review-title" label="Review Title" variant="filled" />
+        <TextField
+          id="review-title"
+          label="Review Title"
+          variant="filled"
+          onChange={onEntry}
+          value={reviewTitle}
+        />
       </form>
     </>
   )
 }
 
-const ReviewBody = () => {
+const ReviewBody = ({ onEntry, userReview }) => {
   return (
     <>
       <TextField
@@ -227,7 +363,8 @@ const ReviewBody = () => {
         label="Enter a Review"
         multiline
         rows={4}
-        defaultValue=""
+        value={userReview}
+        onChange={onEntry}
         variant="outlined"
       />
     </>

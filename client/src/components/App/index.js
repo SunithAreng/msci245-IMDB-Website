@@ -102,15 +102,15 @@ const movies = [
     id: 1,
   },
   {
-    title: 'Kingsman',
+    title: 'Top Gun: Maverick',
     id: 2,
   },
   {
-    title: 'Revenant',
+    title: 'Lightyear',
     id: 3,
   },
   {
-    title: 'Ironman',
+    title: 'Everything Everywhere All At Once',
     id: 4,
   },
   {
@@ -405,7 +405,7 @@ const DialogBox = ({ id, open, handleToClose }) => {
 const MovieSelection = ({ handleChange, classes, movieName, label, idlabel }) => {
   return (
     <>
-      <FormControl variant="outlined" className={classes.formControl}>
+      <FormControl className={classes.formControl}>
         <InputLabel id={idlabel}>{label}</InputLabel>
         <Select
           required
@@ -415,9 +415,10 @@ const MovieSelection = ({ handleChange, classes, movieName, label, idlabel }) =>
           onChange={handleChange}
           input={<Input />}
           MenuProps={MenuProps}
+          variant='outlined'
         >
           {movies.map((movie) => (
-            <option key={movie.id} value={movie.title}>
+            <option key={movie.id} value={movie.title} >
               {movie.title}
             </option>
           ))}

@@ -86,6 +86,9 @@ const useStyles = makeStyles((theme) => ({
   pos: {
     marginBottom: 12,
   },
+  html: {
+    scrollBehavior: 'smooth',
+  },
 }));
 
 const movies = [
@@ -201,7 +204,7 @@ export default function SpacingGrid() {
         sx={{
           height: '100vh',
           opacity: opacityValue,
-          overflow: "hidden",
+          overflow: 'scroll',
           //backgroundColor: lightTheme.palette.background.default,
           //backgroundImage: `url(${BackgroundImage})`,
           backgroundImage: `url(https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80)`,
@@ -215,6 +218,7 @@ export default function SpacingGrid() {
           direction="column"
           justify="flex-start"
           alignItems="stretch"
+          overflow="scroll"
         >
           <Typography variant="h3" component="div">
             Movie Review

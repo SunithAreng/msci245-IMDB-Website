@@ -56,6 +56,7 @@ const MainGridContainer = styled(Grid)(({ theme }) => ({
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    minWidth: 275,
     "& > *": {
       margin: theme.spacing(1),
       width: 500,
@@ -88,10 +89,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 400,
   },
   pos: {
-    marginBottom: 12,
+    marginBottom: 100,
   },
-  html: {
-    scrollBehavior: 'smooth',
+  extendedIcon: {
+    marginRight: theme.spacing(1),
   },
 }));
 
@@ -270,6 +271,7 @@ export default function SpacingGrid() {
               classes={classes}
               movieName={movieName}
               label={"Select a movie"}
+              idlabel={"movies-list"}
             />
             <AddNewMovie
               handleAddNewMovieToList={handleAddNewMovieToList}
@@ -316,16 +318,11 @@ export default function SpacingGrid() {
             />
           </Grid>
           <br />
-          <Grid container>
+          <Typography variant="h6" component="div">
+            User Reviews:
+          </Typography>
+          <Reviews />
 
-            <Typography variant="h6" component="div">
-              User Reviews:
-            </Typography>
-
-            <Reviews
-              classes={classes}
-            />
-          </Grid>
 
         </MainGridContainer>
       </Box>
@@ -334,12 +331,13 @@ export default function SpacingGrid() {
   );
 }
 
-const Reviews = (classes) => {
+const Reviews = () => {
   return (
+
     <ul>
       {initialReviews.map((item) => {
         return (
-          <Card className={classes.root} variant="outlined">
+          <Card style={{ marginTop: 5, marginBottom: 25 }} variant="outlined">
             <CardContent>
               <Typography variant="h6" component="h2">
                 {"Movie: " + item.movieTitle}
@@ -404,15 +402,15 @@ const DialogBox = ({ id, open, handleToClose }) => {
   )
 }
 
-const MovieSelection = ({ handleChange, classes, movieName, label }) => {
+const MovieSelection = ({ handleChange, classes, movieName, label, idlabel }) => {
   return (
     <>
       <FormControl variant="outlined" className={classes.formControl}>
-        <InputLabel id="movies-list">{label}</InputLabel>
+        <InputLabel id={idlabel}>{label}</InputLabel>
         <Select
           required
-          labelId="movies-list"
-          id="movies-list"
+          labelId={idlabel}
+          id={idlabel}
           value={movieName}
           onChange={handleChange}
           input={<Input />}
@@ -431,7 +429,7 @@ const MovieSelection = ({ handleChange, classes, movieName, label }) => {
 
 const AddNewMovie = ({ handleAddNewMovieToList, open, handleClose, handleAddMovie, newMovie, classes }) => {
   return (
-    <>
+    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
       <form className={classes.root} noValidate autoComplete="off">
         <TextField
           id="add-titles"
@@ -442,7 +440,7 @@ const AddNewMovie = ({ handleAddNewMovieToList, open, handleClose, handleAddMovi
         />
       </form>
 
-      <Fab size="medium" color="secondary" aria-label="add" onClick={handleAddNewMovieToList}>
+      <Fab size="small" color="secondary" aria-label="add" onClick={handleAddNewMovieToList}>
         <AddIcon />
       </Fab>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
@@ -450,7 +448,7 @@ const AddNewMovie = ({ handleAddNewMovieToList, open, handleClose, handleAddMovi
           Your movie has been successfully added!
         </Alert>
       </Snackbar>
-    </>
+    </div>
   )
 }
 

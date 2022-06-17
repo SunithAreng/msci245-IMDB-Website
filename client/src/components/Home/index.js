@@ -20,6 +20,10 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const serverURL = "http://ov-research-4.uwaterloo.ca:3032";
 
@@ -53,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     "& > *": {
-      margin: theme.spacing(-1),
+      margin: theme.spacing(1),
       width: 500,
     },
     '& .MuiTextField-root': {
@@ -93,10 +97,6 @@ const useStyles = makeStyles((theme) => ({
 
 const movies = [
   {
-    title: 'None',
-    id: 0,
-  },
-  {
     title: 'Thor: Love and Thunder',
     id: 1,
   },
@@ -132,6 +132,9 @@ const MenuProps = {
   },
 };
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 export default function SpacingGrid() {
   const classes = useStyles();
@@ -156,6 +159,35 @@ export default function SpacingGrid() {
 
   const handleReviewEntry = (event) => {
     setUserReview(event.target.value);
+  }
+
+  const [newMovie, setNewMovie] = React.useState("");
+
+  const handleAddMovie = (event) => {
+    setNewMovie(event.target.value);
+  }
+
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlert(false);
+  };
+
+  const [alertON, setAlert] = React.useState(false);
+
+  const handleAddNewMovieToList = () => {
+    if (newMovie) {
+      const z = {
+        title: newMovie,
+        id: movies.length,
+      }
+      movies.push(z);
+      setNewMovie("");
+      setAlert(true);
+    }
   }
 
   const [open, setOpen] = React.useState(false);
@@ -188,13 +220,18 @@ export default function SpacingGrid() {
     }
   }
 
+  const clear = () => {
+    setMovieName('');
+    setReviewTitle("");
+    setUserReview("");
+    setSpacing([]);
+    setNewMovie("");
+  }
+
   const handleToClose = () => {
     setOpen(false);
     if (dummy == 33) {
-      setMovieName('');
-      setReviewTitle("");
-      setUserReview("");
-      setSpacing([]);
+      clear();
     }
   }
 
@@ -232,6 +269,15 @@ export default function SpacingGrid() {
               handleChange={handleMovieChange}
               classes={classes}
               movieName={movieName}
+              label={"Select a movie"}
+            />
+            <AddNewMovie
+              handleAddNewMovieToList={handleAddNewMovieToList}
+              handleAddMovie={handleAddMovie}
+              newMovie={newMovie}
+              open={alertON}
+              handleClose={handleClose}
+              classes={classes}
             />
           </Grid>
 
@@ -269,8 +315,13 @@ export default function SpacingGrid() {
               id={dummy}
             />
           </Grid>
-
+          <br />
           <Grid container>
+
+            <Typography variant="h6" component="div">
+              User Reviews:
+            </Typography>
+
             <Reviews
               classes={classes}
             />
@@ -353,11 +404,11 @@ const DialogBox = ({ id, open, handleToClose }) => {
   )
 }
 
-const MovieSelection = ({ handleChange, classes, movieName }) => {
+const MovieSelection = ({ handleChange, classes, movieName, label }) => {
   return (
     <>
       <FormControl variant="outlined" className={classes.formControl}>
-        <InputLabel id="movies-list">Select Movies</InputLabel>
+        <InputLabel id="movies-list">{label}</InputLabel>
         <Select
           required
           labelId="movies-list"
@@ -374,6 +425,31 @@ const MovieSelection = ({ handleChange, classes, movieName }) => {
           ))}
         </Select>
       </FormControl>
+    </>
+  )
+}
+
+const AddNewMovie = ({ handleAddNewMovieToList, open, handleClose, handleAddMovie, newMovie, classes }) => {
+  return (
+    <>
+      <form className={classes.root} noValidate autoComplete="off">
+        <TextField
+          id="add-titles"
+          label="Add a movie (Optional)"
+          variant="outlined"
+          onChange={handleAddMovie}
+          value={newMovie}
+        />
+      </form>
+
+      <Fab size="medium" color="secondary" aria-label="add" onClick={handleAddNewMovieToList}>
+        <AddIcon />
+      </Fab>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success">
+          Your movie has been successfully added!
+        </Alert>
+      </Snackbar>
     </>
   )
 }

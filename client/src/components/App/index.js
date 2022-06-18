@@ -246,6 +246,7 @@ export default function SpacingGrid() {
     setUserReview("");
     setSpacing([]);
     setNewMovie("");
+    setAddYes(true);
   }
 
   const handleToClose = () => {

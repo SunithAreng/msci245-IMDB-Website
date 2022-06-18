@@ -173,26 +173,46 @@ export default function SpacingGrid() {
     if (reason === 'clickaway') {
       return;
     }
-
     setAlert(false);
+    setErrorON(false);
+    setEmptyON(false);
   };
 
   const [alertON, setAlert] = React.useState(false);
+  const [errorON, setErrorON] = React.useState(false);
+  const [emptyON, setEmptyON] = React.useState(false);
 
   const handleAddNewMovieToList = () => {
-    if (newMovie) {
-      const z = {
-        title: newMovie,
-        id: movies.length,
+    if (newMovie != "") {
+      var d = false;
+      movies.map((prop) => {
+        if (prop.title.toLowerCase() == newMovie.toLowerCase()) {
+          d = true;
+        }
+      })
+      if (d == false) {
+        const z = {
+          title: newMovie,
+          id: movies.length,
+        }
+        movies.push(z);
+        setNewMovie("");
+        setAlert(true);
+      } else {
+        setErrorON(true);
       }
-      movies.push(z);
-      setNewMovie("");
-      setAlert(true);
+    } else {
+      setEmptyON(true);
     }
   }
 
   const [open, setOpen] = React.useState(false);
   const [dummy, setDummy] = React.useState();
+  const [addYes, setAddYes] = React.useState(true);
+
+  const handleWish = () => {
+    setAddYes(false);
+  }
 
   const handleClickSubmit = () => {
     if (!userReview) {
@@ -217,7 +237,6 @@ export default function SpacingGrid() {
         reviewBody: userReview,
       }
       initialReviews.push(d);
-
     }
   }
 
@@ -227,6 +246,7 @@ export default function SpacingGrid() {
     setUserReview("");
     setSpacing([]);
     setNewMovie("");
+    setAddYes(true);
   }
 
   const handleToClose = () => {
@@ -273,15 +293,28 @@ export default function SpacingGrid() {
               label={"Select a movie"}
               idlabel={"movies-list"}
             />
+          </Grid>
+          <Grid container>
+            <Button variant='contained' onClick={handleWish} style={{ marginLeft: 10, minWidth:500 }}>
+              Add movie
+            </Button>
+          </Grid>
+
+          <Grid container>
             <AddNewMovie
-              handleAddNewMovieToList={handleAddNewMovieToList}
               handleAddMovie={handleAddMovie}
+              classes={classes}
               newMovie={newMovie}
+              handleAddNewMovieToList={handleAddNewMovieToList}
               open={alertON}
               handleClose={handleClose}
-              classes={classes}
+              error={errorON}
+              errEmpt={emptyON}
+              addYes={addYes}
+              handleWish={handleWish}
             />
           </Grid>
+
 
           <Grid container>
             <ReviewTitle
@@ -322,7 +355,6 @@ export default function SpacingGrid() {
             User Reviews:
           </Typography>
           <Reviews />
-
 
         </MainGridContainer>
       </Box>
@@ -428,11 +460,14 @@ const MovieSelection = ({ handleChange, classes, movieName, label, idlabel }) =>
   )
 }
 
-const AddNewMovie = ({ handleAddNewMovieToList, open, handleClose, handleAddMovie, newMovie, classes }) => {
+const AddNewMovie = ({ addYes, handleAddNewMovieToList, open, handleClose, handleAddMovie, newMovie, classes, error, errEmpt }) => {
+
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
       <form className={classes.root} noValidate autoComplete="off">
+
         <TextField
+          disabled={addYes}
           id="add-titles"
           label="Add a movie (Optional)"
           variant="outlined"
@@ -440,16 +475,44 @@ const AddNewMovie = ({ handleAddNewMovieToList, open, handleClose, handleAddMovi
           value={newMovie}
         />
       </form>
-
-      <Fab size="small" color="secondary" aria-label="add" onClick={handleAddNewMovieToList}>
+      <Fab size="small" color="secondary" aria-label="add" onClick={handleAddNewMovieToList}
+        disabled={addYes} 
+      >
         <AddIcon />
       </Fab>
+      <Alerts
+        handleAddNewMovieToList={handleAddNewMovieToList}
+        open={open}
+        handleClose={handleClose}
+        error={error}
+        errEmpt={errEmpt}
+        addYes={addYes}
+      />
+
+    </div>
+  )
+}
+
+const Alerts = ({open, handleClose, error, errEmpt }) => {
+  return (
+    <>
+
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success">
           Your movie has been successfully added!
         </Alert>
       </Snackbar>
-    </div>
+      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Your movie already exists in the list!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={errEmpt} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          The text field is empty!
+        </Alert>
+      </Snackbar>
+    </>
   )
 }
 

@@ -224,23 +224,32 @@ export default function SpacingGrid() {
   const [errState4, setErrState4] = React.useState(false);
 
   const handleClickSubmit = () => {
+    
+    if (movieName === "") {
+      setOpen(true);
+      setDummy(4);
+      setErrState4(true);
+    } 
+    
+    if (!reviewTitle) {
+      setOpen(true);
+      setDummy(2);
+      setErrState1(true);
+    } 
+    
+    if (spacing === "") {
+      setOpen(true);
+      setDummy(3);
+      setErrState3(true);
+    } 
+        
     if (!userReview) {
       setOpen(true);
       setDummy(1);
       setErrState2(true);
-    } else if (!reviewTitle) {
-      setOpen(true);
-      setDummy(2);
-      setErrState1(true);
-    } else if (spacing === "") {
-      setOpen(true);
-      setDummy(3);
-      setErrState3(true);
-    } else if (movieName === "") {
-      setOpen(true);
-      setDummy(4);
-      setErrState4(true);
-    } else {
+    } 
+
+    if (userReview && spacing && movieName && reviewTitle) {
       setOpen(true);
       setDummy(33);
       const d = {

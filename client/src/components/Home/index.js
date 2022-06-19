@@ -9,7 +9,6 @@ import { createTheme, ThemeProvider, styled } from '@material-ui/core/styles';
 import Typography from "@material-ui/core/Typography";
 import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -24,6 +23,7 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import NativeSelect from '@material-ui/core/NativeSelect';
 
 const serverURL = "http://ov-research-4.uwaterloo.ca:3032";
 
@@ -154,6 +154,8 @@ export default function SpacingGrid() {
     setMovieName(event.target.value);
   };
 
+  const [errState, setErrState] = React.useState(false);
+
   const handleTitleEntry = (event) => {
     setReviewTitle(event.target.value);
   }
@@ -167,7 +169,6 @@ export default function SpacingGrid() {
   const handleAddMovie = (event) => {
     setNewMovie(event.target.value);
   }
-
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -183,14 +184,14 @@ export default function SpacingGrid() {
   const [emptyON, setEmptyON] = React.useState(false);
 
   const handleAddNewMovieToList = () => {
-    if (newMovie != "") {
+    if (newMovie !== "") {
       var d = false;
       movies.map((prop) => {
-        if (prop.title.toLowerCase() == newMovie.toLowerCase()) {
+        if (prop.title.toLowerCase() === newMovie.toLowerCase()) {
           d = true;
         }
       })
-      if (d == false) {
+      if (d === false) {
         const z = {
           title: newMovie,
           id: movies.length,
@@ -221,13 +222,14 @@ export default function SpacingGrid() {
     } else if (!reviewTitle) {
       setOpen(true);
       setDummy(2);
-    } else if (spacing == "") {
+    } else if (spacing === "") {
       setOpen(true);
       setDummy(3);
-    } else if (movieName == "") {
+    } else if (movieName === "") {
       setOpen(true);
       setDummy(4);
     } else {
+      setErrState(false);
       setOpen(true);
       setDummy(33);
       const d = {
@@ -251,7 +253,7 @@ export default function SpacingGrid() {
 
   const handleToClose = () => {
     setOpen(false);
-    if (dummy == 33) {
+    if (dummy === 33) {
       clear();
     }
   }
@@ -295,7 +297,7 @@ export default function SpacingGrid() {
             />
           </Grid>
           <Grid container>
-            <Button variant='contained' onClick={handleWish} style={{ marginLeft: 10, minWidth:500 }}>
+            <Button variant='contained' onClick={handleWish} style={{ marginLeft: 10, minWidth: 500 }}>
               Add movie
             </Button>
           </Grid>
@@ -321,6 +323,7 @@ export default function SpacingGrid() {
               classes={classes}
               onEntry={handleTitleEntry}
               reviewTitle={reviewTitle}
+              errState={errState}
             />
           </Grid>
 
@@ -328,7 +331,9 @@ export default function SpacingGrid() {
             <ReviewBody
               classes={classes}
               userReview={userReview}
-              onEntry={handleReviewEntry} />
+              onEntry={handleReviewEntry}
+              errState={errState}
+              />
           </Grid>
           <br />
           <Grid container>
@@ -337,6 +342,7 @@ export default function SpacingGrid() {
               spacing={spacing}
               handleChange={handleRatingChange}
               movieName={movieName}
+              errState={errState}
             />
           </Grid>
           <br />
@@ -369,21 +375,26 @@ const Reviews = () => {
     <ul>
       {initialReviews.map((item) => {
         return (
-          <Card style={{ marginTop: 5, marginBottom: 25 }} variant="outlined">
+          <Card style={{ marginTop: 5, marginBottom: 5 }} variant="outlined">
             <CardContent>
-              <Typography variant="h6" component="h2">
-                {"Movie: " + item.movieTitle}
-              </Typography>
-              <Typography variant="h4" component="h2">
-                {item.reviewTitle}
-              </Typography>
-              <Typography variant="h6" component="h2">
-                {"Rating: " + item.rating}
+
+              <Typography variant="h6" component="div">
+              <p>
+                {"Movie Title: " + item.movieTitle}
+                <br />
+                {"Review Title: "} 
+                <b>{item.reviewTitle}</b>
+                <br />
+                {"User Rating: "}
+                <b>{item.rating}</b>
+                {"/5"}
                 <br />
                 {"User Review: "}
                 <br />
                 {item.reviewBody}
+              </p>
               </Typography>
+              
             </CardContent>
           </Card>
         )
@@ -403,13 +414,13 @@ const DialogBox = ({ id, open, handleToClose }) => {
 
   var d;
 
-  if (id == 1) {
+  if (id === 1) {
     d = msg[0];
-  } else if (id == 2) {
+  } else if (id === 2) {
     d = msg[1];
-  } else if (id == 3) {
+  } else if (id === 3) {
     d = msg[2];
-  } else if (id == 4) {
+  } else if (id === 4) {
     d = msg[4];
   } else {
     d = msg[3];
@@ -439,7 +450,7 @@ const MovieSelection = ({ handleChange, classes, movieName, label, idlabel }) =>
     <>
       <FormControl className={classes.formControl}>
         <InputLabel id={idlabel}>{label}</InputLabel>
-        <Select
+        <NativeSelect
           required
           labelId={idlabel}
           id={idlabel}
@@ -449,12 +460,13 @@ const MovieSelection = ({ handleChange, classes, movieName, label, idlabel }) =>
           MenuProps={MenuProps}
           variant='outlined'
         >
+          <option aria-label="None" value="" />
           {movies.map((movie) => (
             <option key={movie.id} value={movie.title} >
               {movie.title}
             </option>
           ))}
-        </Select>
+        </NativeSelect>
       </FormControl>
     </>
   )
@@ -473,10 +485,11 @@ const AddNewMovie = ({ addYes, handleAddNewMovieToList, open, handleClose, handl
           variant="outlined"
           onChange={handleAddMovie}
           value={newMovie}
+          inputProps={{maxLength :50}}
         />
       </form>
       <Fab size="small" color="secondary" aria-label="add" onClick={handleAddNewMovieToList}
-        disabled={addYes} 
+        disabled={addYes}
       >
         <AddIcon />
       </Fab>
@@ -493,7 +506,7 @@ const AddNewMovie = ({ addYes, handleAddNewMovieToList, open, handleClose, handl
   )
 }
 
-const Alerts = ({open, handleClose, error, errEmpt }) => {
+const Alerts = ({ open, handleClose, error, errEmpt }) => {
   return (
     <>
 
@@ -516,7 +529,7 @@ const Alerts = ({open, handleClose, error, errEmpt }) => {
   )
 }
 
-const ReviewRating = ({ classes, spacing, handleChange }) => {
+const ReviewRating = ({ classes, spacing, handleChange,errState }) => {
   return (
     <>
       <form className={classes.root} noValidate autoComplete="off">
@@ -528,6 +541,7 @@ const ReviewRating = ({ classes, spacing, handleChange }) => {
             value={spacing.toString()}
             onChange={handleChange}
             row
+            error={errState}
           >
             {[1, 2, 3, 4, 5].map((value) => (
               <FormControlLabel
@@ -545,7 +559,7 @@ const ReviewRating = ({ classes, spacing, handleChange }) => {
   )
 }
 
-const ReviewTitle = ({ reviewTitle, classes, onEntry }) => {
+const ReviewTitle = ({ reviewTitle, classes, onEntry, errState }) => {
   return (
     <>
       <form className={classes.root} noValidate autoComplete="off">
@@ -556,13 +570,15 @@ const ReviewTitle = ({ reviewTitle, classes, onEntry }) => {
           variant="outlined"
           onChange={onEntry}
           value={reviewTitle}
+          error={errState}
+          helperText={errState ? "Please enter review title" : ""}
         />
       </form>
     </>
   )
 }
 
-const ReviewBody = ({ classes, onEntry, userReview }) => {
+const ReviewBody = ({ classes, onEntry, userReview, errState }) => {
   return (
     <>
       <form className={classes.root} noValidate autoComplete="off">
@@ -575,6 +591,9 @@ const ReviewBody = ({ classes, onEntry, userReview }) => {
           value={userReview}
           onChange={onEntry}
           variant="outlined"
+          inputProps={{maxLength :200}}
+          helperText="Maximum 200 characters"
+          error={errState}
         />
       </form>
 

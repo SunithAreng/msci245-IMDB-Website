@@ -24,6 +24,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import NativeSelect from '@material-ui/core/NativeSelect';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 //const serverURL = "http://ov-research-4.uwaterloo.ca:3032";
 
@@ -140,28 +141,30 @@ function Alert(props) {
 export default function SpacingGrid() {
   const classes = useStyles();
 
-  const [spacing, setSpacing] = React.useState([]);
-  const [movieName, setMovieName] = React.useState([]);
+  const [spacing, setSpacing] = React.useState("");
+  const [movieName, setMovieName] = React.useState("");
   const [reviewTitle, setReviewTitle] = React.useState("");
   const [userReview, setUserReview] = React.useState("");
 
   const handleRatingChange = (event) => {
-    setSpacing(Number(event.target.value));
+    setSpacing(event.target.value);
+    setErrState3(false);
 
   };
 
   const handleMovieChange = (event) => {
     setMovieName(event.target.value);
+    setErrState4(false);
   };
-
-  const [errState, setErrState] = React.useState(false);
 
   const handleTitleEntry = (event) => {
     setReviewTitle(event.target.value);
+    setErrState1(false);
   }
 
   const handleReviewEntry = (event) => {
     setUserReview(event.target.value);
+    setErrState2(false);
   }
 
   const [newMovie, setNewMovie] = React.useState("");
@@ -215,21 +218,29 @@ export default function SpacingGrid() {
     setAddYes(false);
   }
 
+  const [errState2, setErrState2] = React.useState(false);
+  const [errState1, setErrState1] = React.useState(false);
+  const [errState3, setErrState3] = React.useState(false);
+  const [errState4, setErrState4] = React.useState(false);
+
   const handleClickSubmit = () => {
     if (!userReview) {
       setOpen(true);
       setDummy(1);
+      setErrState2(true);
     } else if (!reviewTitle) {
       setOpen(true);
       setDummy(2);
+      setErrState1(true);
     } else if (spacing === "") {
       setOpen(true);
       setDummy(3);
+      setErrState3(true);
     } else if (movieName === "") {
       setOpen(true);
       setDummy(4);
+      setErrState4(true);
     } else {
-      setErrState(false);
       setOpen(true);
       setDummy(33);
       const d = {
@@ -243,10 +254,10 @@ export default function SpacingGrid() {
   }
 
   const clear = () => {
-    setMovieName('');
+    setMovieName("");
     setReviewTitle("");
     setUserReview("");
-    setSpacing([]);
+    setSpacing("");
     setNewMovie("");
     setAddYes(true);
   }
@@ -294,6 +305,7 @@ export default function SpacingGrid() {
               movieName={movieName}
               label={"Select a movie"}
               idlabel={"movies-list"}
+              errState={errState4}
             />
           </Grid>
           <Grid container>
@@ -323,7 +335,7 @@ export default function SpacingGrid() {
               classes={classes}
               onEntry={handleTitleEntry}
               reviewTitle={reviewTitle}
-              errState={errState}
+              errState={errState1}
             />
           </Grid>
 
@@ -332,7 +344,7 @@ export default function SpacingGrid() {
               classes={classes}
               userReview={userReview}
               onEntry={handleReviewEntry}
-              errState={errState}
+              errState={errState2}
               />
           </Grid>
           <br />
@@ -342,7 +354,7 @@ export default function SpacingGrid() {
               spacing={spacing}
               handleChange={handleRatingChange}
               movieName={movieName}
-              errState={errState}
+              errState={errState3}
             />
           </Grid>
           <br />
@@ -445,10 +457,10 @@ const DialogBox = ({ id, open, handleToClose }) => {
   )
 }
 
-const MovieSelection = ({ handleChange, classes, movieName, label, idlabel }) => {
+const MovieSelection = ({ handleChange, classes, movieName, label, idlabel,errState }) => {
   return (
     <>
-      <FormControl className={classes.formControl}>
+      <FormControl className={classes.formControl} error={errState}>
         <InputLabel id={idlabel}>{label}</InputLabel>
         <NativeSelect
           required
@@ -467,6 +479,7 @@ const MovieSelection = ({ handleChange, classes, movieName, label, idlabel }) =>
             </option>
           ))}
         </NativeSelect>
+        <FormHelperText>{errState ? "Please select a movie for review" :""}</FormHelperText>
       </FormControl>
     </>
   )
@@ -532,7 +545,7 @@ const Alerts = ({ open, handleClose, error, errEmpt }) => {
 const ReviewRating = ({ classes, spacing, handleChange,errState }) => {
   return (
     <>
-      <form className={classes.root} noValidate autoComplete="off">
+      <FormControl className={classes.root} noValidate autoComplete="off" error={errState}>
         <Grid item>
           <FormLabel>Rating</FormLabel>
           <RadioGroup
@@ -541,7 +554,6 @@ const ReviewRating = ({ classes, spacing, handleChange,errState }) => {
             value={spacing.toString()}
             onChange={handleChange}
             row
-            error={errState}
           >
             {[1, 2, 3, 4, 5].map((value) => (
               <FormControlLabel
@@ -553,7 +565,8 @@ const ReviewRating = ({ classes, spacing, handleChange,errState }) => {
             ))}
           </RadioGroup>
         </Grid>
-      </form>
+        <FormHelperText>{errState ? "Please enter your rating":""}</FormHelperText>
+      </FormControl>
 
     </>
   )
@@ -592,7 +605,7 @@ const ReviewBody = ({ classes, onEntry, userReview, errState }) => {
           onChange={onEntry}
           variant="outlined"
           inputProps={{maxLength :200}}
-          helperText="Maximum 200 characters"
+          helperText={errState ? "Please enter your review" :"Maximum 200 characters"}
           error={errState}
         />
       </form>

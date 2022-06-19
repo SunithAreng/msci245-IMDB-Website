@@ -138,9 +138,9 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-export default function SpacingGrid() {
+export default function App() {
+  
   const classes = useStyles();
-
   const [spacing, setSpacing] = React.useState("");
   const [movieName, setMovieName] = React.useState("");
   const [reviewTitle, setReviewTitle] = React.useState("");
@@ -618,7 +618,6 @@ const ReviewBody = ({ classes, onEntry, userReview, errState }) => {
           error={errState}
         />
       </form>
-
     </>
   )
 }

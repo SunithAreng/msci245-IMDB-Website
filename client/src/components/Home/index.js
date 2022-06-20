@@ -139,7 +139,7 @@ function Alert(props) {
 }
 
 export default function App() {
-  
+
   const classes = useStyles();
   const [spacing, setSpacing] = React.useState("");
   const [movieName, setMovieName] = React.useState("");
@@ -149,7 +149,6 @@ export default function App() {
   const handleRatingChange = (event) => {
     setSpacing(event.target.value);
     setErrState3(false);
-
   };
 
   const handleMovieChange = (event) => {
@@ -195,11 +194,11 @@ export default function App() {
         }
       })
       if (d === false) {
-        const z = {
+        const inputMovie = {
           title: newMovie,
           id: movies.length,
         }
-        movies.push(z);
+        movies.push(inputMovie);
         setNewMovie("");
         setAlert(true);
       } else {
@@ -223,43 +222,46 @@ export default function App() {
   const [errState3, setErrState3] = React.useState(false);
   const [errState4, setErrState4] = React.useState(false);
 
-  const handleClickSubmit = () => {
-    
+  const rightSubmission = () => {
+    setOpen(true);
+    setDummy(33);
+    const reviewInfo = {
+      movieTitle: movieName,
+      rating: spacing,
+      reviewTitle: reviewTitle,
+      reviewBody: userReview,
+    }
+    initialReviews.push(reviewInfo);
+  }
+
+  const emptyBoxes = () => {
     if (movieName === "") {
       setOpen(true);
       setDummy(4);
       setErrState4(true);
-    } 
-    
+    }
+
     if (!reviewTitle) {
       setOpen(true);
       setDummy(2);
       setErrState1(true);
-    } 
-    
+    }
+
     if (spacing === "") {
       setOpen(true);
       setDummy(3);
       setErrState3(true);
-    } 
-        
+    }
+
     if (!userReview) {
       setOpen(true);
       setDummy(1);
       setErrState2(true);
-    } 
-
-    if (userReview && spacing && movieName && reviewTitle) {
-      setOpen(true);
-      setDummy(33);
-      const d = {
-        movieTitle: movieName,
-        rating: spacing,
-        reviewTitle: reviewTitle,
-        reviewBody: userReview,
-      }
-      initialReviews.push(d);
     }
+  }
+
+  const handleClickSubmit = () => {
+    userReview && spacing && movieName && reviewTitle ? rightSubmission() : emptyBoxes()
   }
 
   const clear = () => {
@@ -306,7 +308,6 @@ export default function App() {
           <Typography variant="h6" component="div">
             Check out the reviews before you decide to buy the tickets.
           </Typography>
-
           <Grid container>
             <MovieSelection
               handleChange={handleMovieChange}
@@ -322,7 +323,6 @@ export default function App() {
               Add movie
             </Button>
           </Grid>
-
           <Grid container>
             <AddNewMovie
               handleAddMovie={handleAddMovie}
@@ -337,8 +337,6 @@ export default function App() {
               handleWish={handleWish}
             />
           </Grid>
-
-
           <Grid container>
             <ReviewTitle
               classes={classes}
@@ -347,14 +345,13 @@ export default function App() {
               errState={errState1}
             />
           </Grid>
-
           <Grid container>
             <ReviewBody
               classes={classes}
               userReview={userReview}
               onEntry={handleReviewEntry}
               errState={errState2}
-              />
+            />
           </Grid>
           <br />
           <Grid container>
@@ -382,40 +379,35 @@ export default function App() {
             User Reviews:
           </Typography>
           <Reviews />
-
         </MainGridContainer>
       </Box>
     </ThemeProvider>
-
   );
 }
 
 const Reviews = () => {
   return (
-
     <ul>
       {initialReviews.map((item) => {
         return (
           <Card style={{ marginTop: 5, marginBottom: 5 }} variant="outlined">
             <CardContent>
-
               <Typography variant="h6" component="div">
-              <p>
-                {"Movie Title: " + item.movieTitle}
-                <br />
-                {"Review Title: "} 
-                <b>{item.reviewTitle}</b>
-                <br />
-                {"User Rating: "}
-                <b>{item.rating}</b>
-                {"/5"}
-                <br />
-                {"User Review: "}
-                <br />
-                {item.reviewBody}
-              </p>
+                <p>
+                  {"Movie Title: " + item.movieTitle}
+                  <br />
+                  {"Review Title: "}
+                  <b>{item.reviewTitle}</b>
+                  <br />
+                  {"User Rating: "}
+                  <b>{item.rating}</b>
+                  {"/5"}
+                  <br />
+                  {"User Review: "}
+                  <br />
+                  {item.reviewBody}
+                </p>
               </Typography>
-              
             </CardContent>
           </Card>
         )
@@ -466,7 +458,7 @@ const DialogBox = ({ id, open, handleToClose }) => {
   )
 }
 
-const MovieSelection = ({ handleChange, classes, movieName, label, idlabel,errState }) => {
+const MovieSelection = ({ handleChange, classes, movieName, label, idlabel, errState }) => {
   return (
     <>
       <FormControl className={classes.formControl} error={errState}>
@@ -488,18 +480,16 @@ const MovieSelection = ({ handleChange, classes, movieName, label, idlabel,errSt
             </option>
           ))}
         </NativeSelect>
-        <FormHelperText>{errState ? "Please select a movie for review" :""}</FormHelperText>
+        <FormHelperText>{errState ? "Please select a movie for review" : ""}</FormHelperText>
       </FormControl>
     </>
   )
 }
 
 const AddNewMovie = ({ addYes, handleAddNewMovieToList, open, handleClose, handleAddMovie, newMovie, classes, error, errEmpt }) => {
-
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
       <form className={classes.root} noValidate autoComplete="off">
-
         <TextField
           disabled={addYes}
           id="add-titles"
@@ -507,7 +497,7 @@ const AddNewMovie = ({ addYes, handleAddNewMovieToList, open, handleClose, handl
           variant="outlined"
           onChange={handleAddMovie}
           value={newMovie}
-          inputProps={{maxLength :50}}
+          inputProps={{ maxLength: 50 }}
         />
       </form>
       <Fab size="small" color="secondary" aria-label="add" onClick={handleAddNewMovieToList}
@@ -523,7 +513,6 @@ const AddNewMovie = ({ addYes, handleAddNewMovieToList, open, handleClose, handl
         errEmpt={errEmpt}
         addYes={addYes}
       />
-
     </div>
   )
 }
@@ -531,7 +520,6 @@ const AddNewMovie = ({ addYes, handleAddNewMovieToList, open, handleClose, handl
 const Alerts = ({ open, handleClose, error, errEmpt }) => {
   return (
     <>
-
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success">
           Your movie has been successfully added!
@@ -551,7 +539,7 @@ const Alerts = ({ open, handleClose, error, errEmpt }) => {
   )
 }
 
-const ReviewRating = ({ classes, spacing, handleChange,errState }) => {
+const ReviewRating = ({ classes, spacing, handleChange, errState }) => {
   return (
     <>
       <FormControl className={classes.root} noValidate autoComplete="off" error={errState}>
@@ -574,7 +562,7 @@ const ReviewRating = ({ classes, spacing, handleChange,errState }) => {
             ))}
           </RadioGroup>
         </Grid>
-        <FormHelperText>{errState ? "Please enter your rating":""}</FormHelperText>
+        <FormHelperText>{errState ? "Please enter your rating" : ""}</FormHelperText>
       </FormControl>
 
     </>
@@ -613,8 +601,8 @@ const ReviewBody = ({ classes, onEntry, userReview, errState }) => {
           value={userReview}
           onChange={onEntry}
           variant="outlined"
-          inputProps={{maxLength :200}}
-          helperText={errState ? "Please enter your review" :"Maximum 200 characters"}
+          inputProps={{ maxLength: 200 }}
+          helperText={errState ? "Please enter your review" : "Maximum 200 characters"}
           error={errState}
         />
       </form>

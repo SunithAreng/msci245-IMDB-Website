@@ -26,7 +26,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
-const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
+const serverURL = "http://ec2-18-188-101-79.us-east-2.compute.amazonaws.com:3032";
 
 const opacityValue = 0.9;
 

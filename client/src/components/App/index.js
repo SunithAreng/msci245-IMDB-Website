@@ -312,7 +312,7 @@ export default function App() {
           overflow: 'scroll',
           //backgroundColor: lightTheme.palette.background.default,
           //backgroundImage: `url(${BackgroundImage})`,
-          backgroundImage: `url(https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80)`,
+          //backgroundImage: `url(https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80)`,
           backgroundSize: "cover"
         }}
       >

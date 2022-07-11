@@ -28,7 +28,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 
 const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
 
-//const serverURL = "http://localhost:8081";
+// const serverURL = "http://localhost:8081";
 
 // const serverURL = "";
 
@@ -101,11 +101,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-
-const initialReviews = [
-]
-
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -129,17 +124,21 @@ export default function App() {
   const [reviewTitle, setReviewTitle] = React.useState("");
   const [userReview, setUserReview] = React.useState("");
   const [moviesList, setMoviesList] = React.useState([]);
+  const [initialReviews, setInitialReviews] = React.useState([]);
+  const [userID, setUserID] = React.useState(1);
+  const [movieID, setMovieID] = React.useState(0);
 
   React.useEffect(() => {
     getMovies();
+    getReviews();
   }, []);
 
   const getMovies = () => {
     callApiGetMovies()
       .then(res => {
-        console.log("callApiGetMovies returned: ", res)
+        //console.log("callApiGetMovies returned: ", res)
         var parsed = JSON.parse(res.express);
-        console.log("callApiGetMovies parsed: ", parsed);
+        //console.log("callApiGetMovies parsed: ", parsed);
         setMoviesList(parsed);
       })
   }
@@ -156,9 +155,36 @@ export default function App() {
     });
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
-    console.log("User settings: ", body);
+    //console.log("User settings: ", body);
     return body;
   }
+
+  const getReviews = () => {
+    callApiGetReviews()
+      .then(res => {
+        //console.log("callApiGetMovies returned: ", res)
+        var parsed = JSON.parse(res.express);
+        //console.log("callApiGetMovies parsed: ", parsed);
+        setInitialReviews(parsed);
+      })
+  }
+
+  const callApiGetReviews = async () => {
+    const url = serverURL + "/api/getReviews";
+    console.log(url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    //console.log("User settings: ", body);
+    return body;
+  }
+
 
   const handleRatingChange = (event) => {
     setSpacing(event.target.value);
@@ -167,7 +193,7 @@ export default function App() {
 
   const handleMovieChange = (event) => {
     setMovieName(event.target.value);
-    moviesList.map((item)=> {
+    moviesList.map((item) => {
       if (event.target.value === item.name) {
         setMovieID(item.id);
       }
@@ -239,16 +265,11 @@ export default function App() {
   const [errState1, setErrState1] = React.useState(false);
   const [errState3, setErrState3] = React.useState(false);
   const [errState4, setErrState4] = React.useState(false);
-  const [userID, setUserID] = React.useState(1);
-  const [movieID, setMovieID] = React.useState(0);
-  const [reviewID, setReviewID] = React.useState(initialReviews.length+1);
-
+  
   const rightSubmission = () => {
     setOpen(true);
     setDummy(33);
-    setReviewID(initialReviews.length+1);
     const reviewInfo = {
-      reviewID: reviewID,
       movieTitle: movieName,
       movies_id: movieID,
       user_userID: userID,
@@ -256,8 +277,40 @@ export default function App() {
       reviewTitle: reviewTitle,
       reviewContent: userReview,
     }
-    initialReviews.push(reviewInfo);
+    addReview();
     console.log(reviewInfo);
+  }
+
+  const addReview = () => {
+    callApiAddReview()
+      .then(res => {
+        var parsed = JSON.parse(res.express);
+        setInitialReviews(parsed);
+      })
+  }
+
+  const callApiAddReview = async () => {
+
+    const url = serverURL + "/api/addReview";
+    console.log(url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        //authorization: `Bearer ${this.state.token}`
+      },
+      body: JSON.stringify({
+        movies_id: movieID,
+        user_userID: userID,
+        reviewScore: spacing,
+        reviewTitle: reviewTitle,
+        reviewContent: userReview,
+      })
+    });
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
   }
 
   const emptyBoxes = () => {
@@ -406,14 +459,16 @@ export default function App() {
           <Typography variant="h6" component="div">
             User Reviews:
           </Typography>
-          <Reviews />
+          <Reviews
+            initialReviews={initialReviews}
+          />
         </MainGridContainer>
       </Box>
     </ThemeProvider>
   );
 }
 
-const Reviews = () => {
+const Reviews = ({ initialReviews }) => {
   return (
     <ul>
       {initialReviews.map((item) => {
@@ -422,7 +477,7 @@ const Reviews = () => {
             <CardContent>
               <Typography variant="h6" component="div">
                 <p>
-                  {"Movie Title: " + item.movieTitle}
+                  {"Movie Title: " + item.name}
                   <br />
                   {"Review Title: "}
                   <b>{item.reviewTitle}</b>

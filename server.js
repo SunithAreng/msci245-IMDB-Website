@@ -6,7 +6,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 
 const { response } = require('express');
-//var cors = require('cors')
+
 const app = express();
 const port = process.env.PORT || 5000;
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -14,7 +14,8 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, "client/build")));
 
-//app.use(cors());
+// var cors = require('cors');
+// app.use(cors());
 
 // app.use(function(req, res, next) {
 //     res.header('Access-Control-Allow-Origin', '*');
@@ -95,8 +96,6 @@ app.post('/api/loadUserSettings', (req, res) => {
 	});
 	connection.end();
 });
-
-
 
 //app.listen(8081, () => console.log(`Listening on port ${port}`)); //for the dev version
 app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server

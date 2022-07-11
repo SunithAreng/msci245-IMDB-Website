@@ -12,14 +12,21 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
-app.use(express.static(path.join(__dirname, "client/build")));
+//app.use(express.static(path.join(__dirname, "client/build")));
 
 app.use(cors());
 
 app.use(function(req, res, next) {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-	next();
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+
+    if ('OPTIONS' === req.method) {
+      res.send(200);
+    }
+    else {
+      next();
+    }
 });
 
 const movies = [
@@ -46,11 +53,12 @@ const movies = [
 ];
 
 
-app.post('/api/loadMovies', (req, res) => {
+app.post('/api/getMovies', (req, res) => {
 	let string = JSON.stringify(movies);
 	console.log(string);
 	res.send({ express: string });
 });
+
 
 
 app.post('/api/loadUserSettings', (req, res) => {
@@ -77,5 +85,5 @@ app.post('/api/loadUserSettings', (req, res) => {
 
 
 
-app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
+app.listen(8081, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server

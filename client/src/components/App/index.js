@@ -26,7 +26,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
-const serverURL = "http://localhost:3000";
+const serverURL = "http://localhost:8081";
 
 const opacityValue = 0.9;
 
@@ -117,29 +117,6 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-const movies = [
-	{
-		title: 'Thor: Love and Thunder',
-		id: 1,
-	},
-	{
-		title: 'Top Gun: Maverick',
-		id: 2,
-	},
-	{
-		title: 'Lightyear',
-		id: 3,
-	},
-	{
-		title: 'Everything Everywhere All At Once',
-		id: 4,
-	},
-	{
-		title: 'Doctor Strange in Multiverse of Madness',
-		id: 5,
-	}
-];
-
 export default function App() {
 
   const classes = useStyles();
@@ -150,21 +127,21 @@ export default function App() {
   const [moviesList, setMoviesList] = React.useState([]);
 
   React.useEffect(() => {
-    loadMovies();
+    getMovies();
   }, []);
 
-  const loadMovies = () => {
-    callApiLoadMovies()
+  const getMovies = () => {
+    callApiGetMovies()
       .then(res => {
-        console.log("callApiLoadMovies returned: ", res)
+        console.log("callApiGetMovies returned: ", res)
         var parsed = JSON.parse(res.express);
-        console.log("callApiLoadMovies parsed: ", parsed);
+        console.log("callApiGetMovies parsed: ", parsed);
         setMoviesList(parsed);
       })
   }
 
-  const callApiLoadMovies = async () => {
-    const url = serverURL + "/api/loadMovies";
+  const callApiGetMovies = async () => {
+    const url = serverURL + "/api/getMovies";
     console.log(url);
 
     const response = await fetch(url, {

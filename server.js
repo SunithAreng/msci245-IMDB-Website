@@ -54,9 +54,22 @@ const movies = [
 
 
 app.post('/api/getMovies', (req, res) => {
-	let string = JSON.stringify(movies);
-	console.log(string);
-	res.send({ express: string });
+	let connection = mysql.createConnection(config);
+
+	let sql = `SELECT name, id, year, quality FROM movies`;
+	let data = [];
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+		console.log(results);
+		let string = JSON.stringify(results);
+		let obj = JSON.parse(string);
+		res.send({ express: string });
+	});
+	connection.end();
 });
 
 
@@ -85,5 +98,5 @@ app.post('/api/loadUserSettings', (req, res) => {
 
 
 
-app.listen(8081, () => console.log(`Listening on port ${port}`)); //for the dev version
-//app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server
+//app.listen(8081, () => console.log(`Listening on port ${port}`)); //for the dev version
+app.listen(3032, '172.31.31.77'); //for the deployed version, specify the IP address of the server

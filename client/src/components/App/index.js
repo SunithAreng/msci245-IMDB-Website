@@ -163,6 +163,11 @@ export default function App() {
 
   const handleMovieChange = (event) => {
     setMovieName(event.target.value);
+    moviesList.map((item)=> {
+      if (event.target.value === item.name) {
+        setMovieID(item.id);
+      }
+    })
     setErrState4(false);
   };
 
@@ -205,8 +210,7 @@ export default function App() {
       })
       if (d === false) {
         const inputMovie = {
-          title: newMovie,
-          id: moviesList.length,
+          name: newMovie,
         }
         moviesList.push(inputMovie);
         setNewMovie("");
@@ -231,17 +235,25 @@ export default function App() {
   const [errState1, setErrState1] = React.useState(false);
   const [errState3, setErrState3] = React.useState(false);
   const [errState4, setErrState4] = React.useState(false);
+  const [userID, setUserID] = React.useState(1);
+  const [movieID, setMovieID] = React.useState(0);
+  const [reviewID, setReviewID] = React.useState(initialReviews.length+1);
 
   const rightSubmission = () => {
     setOpen(true);
     setDummy(33);
+    setReviewID(initialReviews.length+1);
     const reviewInfo = {
+      reviewID: reviewID,
       movieTitle: movieName,
-      rating: spacing,
+      movies_id: movieID,
+      user_userID: userID,
+      reviewScore: spacing,
       reviewTitle: reviewTitle,
-      reviewBody: userReview,
+      reviewContent: userReview,
     }
     initialReviews.push(reviewInfo);
+    console.log(reviewInfo);
   }
 
   const emptyBoxes = () => {
@@ -281,6 +293,7 @@ export default function App() {
     setSpacing("");
     setNewMovie("");
     setAddYes(true);
+    setMovieID(0);
   }
 
   const handleToClose = () => {
@@ -411,12 +424,12 @@ const Reviews = () => {
                   <b>{item.reviewTitle}</b>
                   <br />
                   {"User Rating: "}
-                  <b>{item.rating}</b>
+                  <b>{item.reviewScore}</b>
                   {"/5"}
                   <br />
                   {"User Review: "}
                   <br />
-                  {item.reviewBody}
+                  {item.reviewContent}
                 </p>
               </Typography>
             </CardContent>
@@ -486,8 +499,8 @@ const MovieSelection = ({ moviesList, handleChange, classes, movieName, label, i
         >
           <option aria-label="None" value="" />
           {moviesList.map((movie) => (
-            <option key={movie.id} value={movie.title} >
-              {movie.title}
+            <option key={movie.id} value={movie.name} >
+              {movie.name}
             </option>
           ))}
         </NativeSelect>

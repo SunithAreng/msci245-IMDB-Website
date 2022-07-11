@@ -26,7 +26,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
-//const serverURL = "http://ec2-18-188-101-79.us-east-2.compute.amazonaws.com:3032";
+const serverURL = "http://localhost:3000";
 
 const opacityValue = 0.9;
 
@@ -97,28 +97,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const movies = [
-  {
-    title: 'Thor: Love and Thunder',
-    id: 1,
-  },
-  {
-    title: 'Top Gun: Maverick',
-    id: 2,
-  },
-  {
-    title: 'Lightyear',
-    id: 3,
-  },
-  {
-    title: 'Everything Everywhere All At Once',
-    id: 4,
-  },
-  {
-    title: 'Doctor Strange in Multiverse of Madness',
-    id: 5,
-  }
-]
+
 
 const initialReviews = [
 ]
@@ -138,6 +117,29 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
+const movies = [
+	{
+		title: 'Thor: Love and Thunder',
+		id: 1,
+	},
+	{
+		title: 'Top Gun: Maverick',
+		id: 2,
+	},
+	{
+		title: 'Lightyear',
+		id: 3,
+	},
+	{
+		title: 'Everything Everywhere All At Once',
+		id: 4,
+	},
+	{
+		title: 'Doctor Strange in Multiverse of Madness',
+		id: 5,
+	}
+];
+
 export default function App() {
 
   const classes = useStyles();
@@ -145,6 +147,37 @@ export default function App() {
   const [movieName, setMovieName] = React.useState("");
   const [reviewTitle, setReviewTitle] = React.useState("");
   const [userReview, setUserReview] = React.useState("");
+  const [moviesList, setMoviesList] = React.useState([]);
+
+  React.useEffect(() => {
+    loadMovies();
+  }, []);
+
+  const loadMovies = () => {
+    callApiLoadMovies()
+      .then(res => {
+        console.log("callApiLoadMovies returned: ", res)
+        var parsed = JSON.parse(res.express);
+        console.log("callApiLoadMovies parsed: ", parsed);
+        setMoviesList(parsed);
+      })
+  }
+
+  const callApiLoadMovies = async () => {
+    const url = serverURL + "/api/loadMovies";
+    console.log(url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("User settings: ", body);
+    return body;
+  }
 
   const handleRatingChange = (event) => {
     setSpacing(event.target.value);
@@ -188,7 +221,7 @@ export default function App() {
   const handleAddNewMovieToList = () => {
     if (newMovie !== "") {
       var d = false;
-      movies.map((prop) => {
+      moviesList.map((prop) => {
         if (prop.title.toLowerCase() === newMovie.toLowerCase()) {
           d = true;
         }
@@ -196,9 +229,9 @@ export default function App() {
       if (d === false) {
         const inputMovie = {
           title: newMovie,
-          id: movies.length,
+          id: moviesList.length,
         }
-        movies.push(inputMovie);
+        moviesList.push(inputMovie);
         setNewMovie("");
         setAlert(true);
       } else {
@@ -316,6 +349,7 @@ export default function App() {
               label={"Select a movie"}
               idlabel={"movies-list"}
               errState={errState4}
+              moviesList={moviesList}
             />
           </Grid>
           <Grid container>
@@ -458,7 +492,7 @@ const DialogBox = ({ id, open, handleToClose }) => {
   )
 }
 
-const MovieSelection = ({ handleChange, classes, movieName, label, idlabel, errState }) => {
+const MovieSelection = ({ moviesList, handleChange, classes, movieName, label, idlabel, errState }) => {
   return (
     <>
       <FormControl className={classes.formControl} error={errState}>
@@ -474,7 +508,7 @@ const MovieSelection = ({ handleChange, classes, movieName, label, idlabel, errS
           variant='outlined'
         >
           <option aria-label="None" value="" />
-          {movies.map((movie) => (
+          {moviesList.map((movie) => (
             <option key={movie.id} value={movie.title} >
               {movie.title}
             </option>

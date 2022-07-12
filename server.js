@@ -30,30 +30,6 @@ app.use(express.static(path.join(__dirname, "client/build")));
 // 	}
 // });
 
-const movies = [
-	{
-		title: 'Thor: Love and Thunder',
-		id: 1,
-	},
-	{
-		title: 'Top Gun: Maverick',
-		id: 2,
-	},
-	{
-		title: 'Lightyear',
-		id: 3,
-	},
-	{
-		title: 'Everything Everywhere All At Once',
-		id: 4,
-	},
-	{
-		title: 'Doctor Strange in Multiverse of Madness',
-		id: 5,
-	}
-];
-
-
 app.post('/api/getMovies', (req, res) => {
 	let connection = mysql.createConnection(config);
 
@@ -65,7 +41,6 @@ app.post('/api/getMovies', (req, res) => {
 			return console.error(error.message);
 		}
 
-		console.log(results);
 		let string = JSON.stringify(results);
 		let obj = JSON.parse(string);
 		res.send({ express: string });
@@ -85,8 +60,6 @@ app.post('/api/getReviews', (req, res) => {
 		if (error) {
 			return console.error(error.message);
 		}
-
-		console.log(results);
 		let string = JSON.stringify(results);
 		let obj = JSON.parse(string);
 		res.send({ express: string });
@@ -115,16 +88,14 @@ app.post('/api/addReview', (req, res) => {
 		}
 
 		let getSql = `SELECT r.reviewTitle, r.reviewContent, r.reviewScore, r.movies_id, r.user_userID , m.name
-	FROM Review r, movies m
-	WHERE r.movies_id = m.id`;
+						FROM Review r, movies m
+						WHERE r.movies_id = m.id`;
 		let getData = [];
 
 		connection.query(getSql, getData, (error, results, fields) => {
 			if (error) {
 				return console.error(error.message);
 			}
-
-			console.log(results);
 			let string = JSON.stringify(results);
 			let obj = JSON.parse(string);
 			res.send({ express: string });

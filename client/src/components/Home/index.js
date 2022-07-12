@@ -19,10 +19,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
@@ -112,10 +108,6 @@ const MenuProps = {
   },
 };
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
 export default function App() {
 
   const classes = useStyles();
@@ -136,9 +128,7 @@ export default function App() {
   const getMovies = () => {
     callApiGetMovies()
       .then(res => {
-        //console.log("callApiGetMovies returned: ", res)
         var parsed = JSON.parse(res.express);
-        //console.log("callApiGetMovies parsed: ", parsed);
         setMoviesList(parsed);
       })
   }
@@ -155,16 +145,13 @@ export default function App() {
     });
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
-    //console.log("User settings: ", body);
     return body;
   }
 
   const getReviews = () => {
     callApiGetReviews()
       .then(res => {
-        //console.log("callApiGetMovies returned: ", res)
         var parsed = JSON.parse(res.express);
-        //console.log("callApiGetMovies parsed: ", parsed);
         setInitialReviews(parsed);
       })
   }
@@ -181,10 +168,8 @@ export default function App() {
     });
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
-    //console.log("User settings: ", body);
     return body;
   }
-
 
   const handleRatingChange = (event) => {
     setSpacing(event.target.value);
@@ -211,55 +196,8 @@ export default function App() {
     setErrState2(false);
   }
 
-  const [newMovie, setNewMovie] = React.useState("");
-
-  const handleAddMovie = (event) => {
-    setNewMovie(event.target.value);
-  }
-
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setAlert(false);
-    setErrorON(false);
-    setEmptyON(false);
-  };
-
-  const [alertON, setAlert] = React.useState(false);
-  const [errorON, setErrorON] = React.useState(false);
-  const [emptyON, setEmptyON] = React.useState(false);
-
-  const handleAddNewMovieToList = () => {
-    if (newMovie !== "") {
-      var d = false;
-      moviesList.map((prop) => {
-        if (prop.title.toLowerCase() === newMovie.toLowerCase()) {
-          d = true;
-        }
-      })
-      if (d === false) {
-        const inputMovie = {
-          name: newMovie,
-        }
-        moviesList.push(inputMovie);
-        setNewMovie("");
-        setAlert(true);
-      } else {
-        setErrorON(true);
-      }
-    } else {
-      setEmptyON(true);
-    }
-  }
-
   const [open, setOpen] = React.useState(false);
   const [dummy, setDummy] = React.useState();
-  const [addYes, setAddYes] = React.useState(true);
-
-  const handleWish = () => {
-    setAddYes(false);
-  }
 
   const [errState2, setErrState2] = React.useState(false);
   const [errState1, setErrState1] = React.useState(false);
@@ -348,8 +286,6 @@ export default function App() {
     setReviewTitle("");
     setUserReview("");
     setSpacing("");
-    setNewMovie("");
-    setAddYes(true);
     setMovieID(0);
   }
 
@@ -367,8 +303,6 @@ export default function App() {
           height: '100vh',
           opacity: opacityValue,
           overflow: 'scroll',
-          //backgroundColor: lightTheme.palette.background.default,
-          //backgroundImage: `url(${BackgroundImage})`,
           backgroundImage: `url(https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80)`,
           backgroundSize: "cover"
         }}
@@ -386,7 +320,7 @@ export default function App() {
             Movie Review
           </Typography>
           <Typography variant="h6" component="div">
-            Check out the reviews before you decide to buy the tickets.
+            Find out what critics think about some of the classics of our time!
           </Typography>
           <Grid container>
             <MovieSelection
@@ -397,25 +331,6 @@ export default function App() {
               idlabel={"movies-list"}
               errState={errState4}
               moviesList={moviesList}
-            />
-          </Grid>
-          <Grid container>
-            <Button variant='contained' onClick={handleWish} style={{ marginLeft: 10, minWidth: 500 }}>
-              Add movie
-            </Button>
-          </Grid>
-          <Grid container>
-            <AddNewMovie
-              handleAddMovie={handleAddMovie}
-              classes={classes}
-              newMovie={newMovie}
-              handleAddNewMovieToList={handleAddNewMovieToList}
-              open={alertON}
-              handleClose={handleClose}
-              error={errorON}
-              errEmpt={emptyON}
-              addYes={addYes}
-              handleWish={handleWish}
             />
           </Grid>
           <Grid container>
@@ -565,59 +480,6 @@ const MovieSelection = ({ moviesList, handleChange, classes, movieName, label, i
         </NativeSelect>
         <FormHelperText>{errState ? "Please select a movie for review" : ""}</FormHelperText>
       </FormControl>
-    </>
-  )
-}
-
-const AddNewMovie = ({ addYes, handleAddNewMovieToList, open, handleClose, handleAddMovie, newMovie, classes, error, errEmpt }) => {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-      <form className={classes.root} noValidate autoComplete="off">
-        <TextField
-          disabled={addYes}
-          id="add-titles"
-          label="Add a movie (Optional)"
-          variant="outlined"
-          onChange={handleAddMovie}
-          value={newMovie}
-          inputProps={{ maxLength: 50 }}
-        />
-      </form>
-      <Fab size="small" color="secondary" aria-label="add" onClick={handleAddNewMovieToList}
-        disabled={addYes}
-      >
-        <AddIcon />
-      </Fab>
-      <Alerts
-        handleAddNewMovieToList={handleAddNewMovieToList}
-        open={open}
-        handleClose={handleClose}
-        error={error}
-        errEmpt={errEmpt}
-        addYes={addYes}
-      />
-    </div>
-  )
-}
-
-const Alerts = ({ open, handleClose, error, errEmpt }) => {
-  return (
-    <>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success">
-          Your movie has been successfully added!
-        </Alert>
-      </Snackbar>
-      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error">
-          Your movie already exists in the list!
-        </Alert>
-      </Snackbar>
-      <Snackbar open={errEmpt} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error">
-          The text field is empty!
-        </Alert>
-      </Snackbar>
     </>
   )
 }

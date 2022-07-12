@@ -97,17 +97,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
 export default function App() {
 
   const classes = useStyles();
@@ -115,7 +104,7 @@ export default function App() {
   const [movieName, setMovieName] = React.useState("");
   const [reviewTitle, setReviewTitle] = React.useState("");
   const [userReview, setUserReview] = React.useState("");
-  const [moviesList, setMoviesList] = React.useState([]);
+  const [movies, setMovies] = React.useState([]);
   const [initialReviews, setInitialReviews] = React.useState([]);
   const [userID, setUserID] = React.useState(1);
   const [movieID, setMovieID] = React.useState(0);
@@ -129,7 +118,7 @@ export default function App() {
     callApiGetMovies()
       .then(res => {
         var parsed = JSON.parse(res.express);
-        setMoviesList(parsed);
+        setMovies(parsed);
       })
   }
 
@@ -178,7 +167,7 @@ export default function App() {
 
   const handleMovieChange = (event) => {
     setMovieName(event.target.value);
-    moviesList.map((item) => {
+    movies.map((item) => {
       if (event.target.value === item.name) {
         setMovieID(item.id);
       }
@@ -330,7 +319,7 @@ export default function App() {
               label={"Select a movie"}
               idlabel={"movies-list"}
               errState={errState4}
-              moviesList={moviesList}
+              movies={movies}
             />
           </Grid>
           <Grid container>
@@ -456,10 +445,10 @@ const DialogBox = ({ id, open, handleToClose }) => {
   )
 }
 
-const MovieSelection = ({ moviesList, handleChange, classes, movieName, label, idlabel, errState }) => {
+const MovieSelection = ({ movies, handleChange, classes, movieName, label, idlabel, errState }) => {
   return (
     <>
-      <FormControl className={classes.formControl} error={errState}>
+      <FormControl variant='outlined' className={classes.formControl} error={errState}>
         <InputLabel id={idlabel}>{label}</InputLabel>
         <NativeSelect
           required
@@ -468,11 +457,9 @@ const MovieSelection = ({ moviesList, handleChange, classes, movieName, label, i
           value={movieName}
           onChange={handleChange}
           input={<Input />}
-          MenuProps={MenuProps}
-          variant='outlined'
         >
           <option aria-label="None" value="" />
-          {moviesList.map((movie) => (
+          {movies.map((movie) => (
             <option key={movie.id} value={movie.name} >
               {movie.name}
             </option>

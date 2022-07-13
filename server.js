@@ -14,6 +14,9 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, "client/build")));
 
+// The below code of cors is only needed to run the code on dev mode. My PC does not support the default steps.
+// Hence this work around method was introduced.
+
 // var cors = require('cors');
 // app.use(cors());
 

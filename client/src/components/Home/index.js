@@ -7,19 +7,18 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import { createTheme, ThemeProvider, styled } from '@material-ui/core/styles';
 import Typography from "@material-ui/core/Typography";
-import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Box from "@material-ui/core/Box";
-import { Dialog } from '@material-ui/core';
+import { Dialog, MenuItem } from '@material-ui/core';
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import NativeSelect from '@material-ui/core/NativeSelect';
+import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
 const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
@@ -165,13 +164,9 @@ export default function App() {
     setErrState3(false);
   };
 
-  const handleMovieChange = (event) => {
-    setMovieName(event.target.value);
-    movies.map((item) => {
-      if (event.target.value === item.name) {
-        setMovieID(item.id);
-      }
-    })
+  const handleMovieChange = (selectedMovie) => {
+    setMovieName(selectedMovie.name);
+    setMovieID(selectedMovie.id);
     setErrState4(false);
   };
 
@@ -197,7 +192,6 @@ export default function App() {
     setOpen(true);
     setDummy(33);
     const reviewInfo = {
-      movieTitle: movieName,
       movies_id: movieID,
       user_userID: userID,
       reviewScore: spacing,
@@ -344,7 +338,6 @@ export default function App() {
               classes={classes}
               spacing={spacing}
               handleChange={handleRatingChange}
-              movieName={movieName}
               errState={errState3}
             />
           </Grid>
@@ -450,21 +443,21 @@ const MovieSelection = ({ movies, handleChange, classes, movieName, label, idlab
     <>
       <FormControl variant='outlined' className={classes.formControl} error={errState}>
         <InputLabel id={idlabel}>{label}</InputLabel>
-        <NativeSelect
+        <Select
           required
           labelId={idlabel}
           id={idlabel}
           value={movieName}
-          onChange={handleChange}
-          input={<Input />}
         >
-          <option aria-label="None" value="" />
-          {movies.map((movie) => (
-            <option key={movie.id} value={movie.name} >
+          {movies.map((movie) => {
+            return (
+              <MenuItem key={movie.id} value={movie.name} onClick={()=> handleChange(movie)}>
               {movie.name}
-            </option>
-          ))}
-        </NativeSelect>
+              </MenuItem>
+            )
+          }
+          )}
+        </Select>
         <FormHelperText>{errState ? "Please select a movie for review" : ""}</FormHelperText>
       </FormControl>
     </>

@@ -96,6 +96,80 @@ app.post('/api/addReview', (req, res) => {
 	});
 });
 
+app.post('/api/findMovies', (req, res) => {
+	let connection = mysql.createConnection(config);
+	let movieSearchTerm = req.body.movieSearchTerm;
+	let actorSearchTerm = req.body.actorSearchTerm;
+	let directorSearchTerm = req.body.directorSearchTerm;
+	console.log("movieSearchTerm: ", movieSearchTerm);
+	console.log("actorSearchTerm: ", actorSearchTerm);
+	console.log("directorSearchTerm: ", directorSearchTerm);
+
+/* 
+  ******* Working SQL query example for our task ********
+SELECT r.title, GROUP_CONCAT(i.name) AS ingredients
+FROM ingredient i, recipe r, recipeIngredient ri  
+WHERE r.recipeID = ri.recipeID  
+AND i.ingredientID = ri.ingredientID  
+AND  r.recipeID IN (
+	SELECT ri.recipeID 
+	FROM recipeIngredient ri, ingredient i 
+	WHERE i.ingredientID = ri.ingredientID 
+	AND i.name = 'apple' 
+	AND r.calories <= 500)  
+GROUP BY r.recipeID;
+*/
+
+/* 
+	The GROUP_CONCAT() function in MySQL is used to concatenate data from multiple rows into one field.
+*/
+
+	let sql = `SELECT r.reviewTitle, r.reviewContent, r.reviewScore, r.movies_id, r.user_userID , m.name, CONCAT(d.first_name, " ", d.last_name) AS dname
+	FROM Review r, movies m, directors d, movies_directors ms
+	WHERE r.movies_id = m.id
+	AND ms.movie_id = r.movies_id
+	AND ms.director_id = d.id`;
+
+	let data = [];
+	//Since either ingredientSearchTerm or CalorieSearchTerm can be empty, 
+	//we need to add their respective SQL clauses and corresponding data array elements (for '?' placeholders) conditionally.
+	if (movieSearchTerm){
+		sql = sql + ` AND m.name = ?`;
+		data.push(movieSearchTerm);
+	}
+
+	if (directorSearchTerm){
+		sql = sql + ` AND  CONCAT(d.first_name, " ", d.last_name) IN (?)`;
+		data.push(directorSearchTerm);
+	}
+
+	if (actorSearchTerm){
+		sql = sql + ` AND  CONCAT(a.first_name, " ", a.last_name) IN (?)`;
+		data.push(directorSearchTerm);
+	}
+
+	//finally, add the GROUP BY clause to complete our SQL query
+	//sql = sql + ` GROUP BY dname;`
+
+
+	console.log(sql);
+	console.log(data);
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+		console.log(results);
+
+		let string = JSON.stringify(results);
+		res.send({ express: string });
+		connection.end();
+	});
+	
+
+});
+
 app.post('/api/loadUserSettings', (req, res) => {
 
 	let connection = mysql.createConnection(config);

@@ -13,8 +13,12 @@ import history from '../Navigation/history';
 import AppBar from '@material-ui/core/AppBar';
 import Container from '@material-ui/core/Container';
 import Toolbar from '@material-ui/core/Toolbar';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 
-const serverURL = "";
+// const serverURL = "";
+
+const serverURL = "http://localhost:8081";
 
 const opacityValue = 0.9;
 
@@ -39,7 +43,7 @@ const lightTheme = createTheme({
 });
 
 
-const RecipePaper = styled(Paper)(({ theme }) => ({
+const MoviePaper = styled(Paper)(({ theme }) => ({
     opacity: 0.7,
     backgroundColor: theme.palette.primary.background,
     padding: 8,
@@ -54,77 +58,40 @@ const MainGridContainer = styled(Grid)(({ theme }) => ({
 
 const App = () => {
 
-    const [expandedRecipesList, setExpandedRecipesList] = React.useState([]);
-    const [recipesList, setRecipesList] = React.useState([]);
-    const [editedItem, setEditedItem] = React.useState('');
-    const [ingredientSearchTerm, setIngredientSearchTerm] = React.useState('');
-    const [calorieSearchTerm, setCalorieSearchTerm] = React.useState('');
+    const [moviesList, setMoviesList] = React.useState([]);
+    const [movieSearchTerm, setMovieSearchTerm] = React.useState('');
+    const [actorSearchTerm, setActorSearchTerm] = React.useState('');
+    const [directorSearchTerm, setDirectorSearchTerm] = React.useState('');
 
-    const handleToggleIngredients = (item) => {
-        var expandedRecipesListCopy = [...expandedRecipesList];
-        if (expandedRecipesList.includes(item.recipeID)) {
-            var index = expandedRecipesList.indexOf(item.recipeID);
-            expandedRecipesListCopy.splice(index, 1);
-            setExpandedRecipesList(expandedRecipesListCopy);
-            console.log('expandedRecipesList: ', expandedRecipesList);
-        } else {
-            expandedRecipesListCopy.push(item.recipeID);
-            setExpandedRecipesList(expandedRecipesListCopy);
-            console.log('expandedRecipesList: ', expandedRecipesList);
-        }
+    const handleSubmit = () => {
+        handleMovieSearch();
     }
 
-    const handleEditInstructions = (item) => {
-        setEditedItem(item.recipeID);
-    }
-
-    const handleUpdateInstructions = (index, instructions) => {
-        console.log("ID: ", index);
-        var recipesListCopy = recipesList;
-        recipesListCopy[index].instructions = instructions;
-        setRecipesList(recipesListCopy);
-        setEditedItem('');
-    }
-
-    const loadRecipes = () => {
-        callApiLoadRecipes()
+    const handleMovieSearch = () => {
+        callApiFindMovies()
             .then(res => {
-                console.log("callApiLoadRecipes returned: ", res)
+                console.log("callApiFindMovies returned: ", res)
                 var parsed = JSON.parse(res.express);
-                console.log("callApiLoadRecipes parsed: ", parsed);
-                setRecipesList(parsed);
-            })
-    }
-
-    const callApiLoadRecipes = async () => {
-        const url = serverURL + "/api/loadRecipes";
-        console.log(url);
-
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        console.log("User settings: ", body);
-        return body;
-    }
-
-    const handleRecipeSearch = () => {
-        callApiFindRecipe()
-            .then(res => {
-                console.log("callApiFindRecipe returned: ", res)
-                var parsed = JSON.parse(res.express);
-                console.log("callApiFindRecipe parsed: ", parsed[0])
-                setRecipesList(parsed);
+                console.log("callApiFindMovies parsed: ", parsed[0])
+                setMoviesList(parsed);
             });
     }
 
-    const callApiFindRecipe = async () => {
+    const handleMovieEntry = (event) => {
+        setMovieSearchTerm(event.target.value);
+    }
 
-        const url = serverURL + "/api/findRecipe";
+    const handleDirectorEntry = (event) => {
+        setDirectorSearchTerm(event.target.value);
+    }
+
+    const handleActorEntry = (event) => {
+        setActorSearchTerm(event.target.value);
+    }
+
+    const callApiFindMovies = async () => {
+
+        const url = serverURL + "/api/findMovies";
         console.log(url);
 
         const response = await fetch(url, {
@@ -134,16 +101,15 @@ const App = () => {
                 //authorization: `Bearer ${this.state.token}`
             },
             body: JSON.stringify({
-                ingredientSearchTerm: ingredientSearchTerm,
-                calorieSearchTerm: calorieSearchTerm
+                movieSearchTerm: movieSearchTerm,
+                actorSearchTerm: actorSearchTerm,
+                directorSearchTerm: directorSearchTerm,
             })
         });
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
-        console.log("Found recipes: ", body);
         return body;
     }
-
 
     return (
         <ThemeProvider theme={lightTheme}>
@@ -196,218 +162,88 @@ const App = () => {
                     </Typography>
                     <Search
                         label="Search by Movies"
-                        onSearch={setIngredientSearchTerm}
+                        onSearch={handleMovieEntry}
                     />
 
                     <Search
                         label="Search by Actors"
-                        onSearch={setCalorieSearchTerm}
+                        onSearch={handleActorEntry}
                     />
 
                     <Search
                         label="Search by Directors"
-                        onSearch={setCalorieSearchTerm}
+                        onSearch={handleDirectorEntry}
+                    />
+                    <br />
+                    <Grid container>
+                        <Button variant="contained" color='secondary' onClick={handleSubmit}>Search</Button>
+                    </Grid>
+                    <Reviews
+                        initialReviews={moviesList}
                     />
 
 
-                    <List
-                        recipesList={recipesList}
-                        expandedRecipesList={expandedRecipesList}
-                        onToggleIngredients={handleToggleIngredients}
-                        onEditInstructions={handleEditInstructions}
-                        onUpdateInstructions={handleUpdateInstructions}
-                        editedItem={editedItem}
-                    />
 
                 </MainGridContainer>
+
             </Box>
         </ThemeProvider>
     );
 }
 
 const Search = ({ label, onSearch }) => {
-    const [searchTerm, setSearchTerm] = React.useState('');
-
-    const onChangeSearchTerm = (event) => {
-        setSearchTerm(event.target.value);
-    }
-
-
     return (
-        <TextField
-            id="search"
-            label={label}
-            value={searchTerm}
-            onChange={(event) => onChangeSearchTerm(event)}
-            variant="standard"
-            autoComplete="off"
-            color="secondary"
-            InputProps={{
-                endAdornment: (
-                    <InputAdornment position="end">
-                        <IconButton
-                            onClick={() => onSearch(searchTerm)}
-                        >
-                            <SearchIcon />
-                        </IconButton>
-                    </InputAdornment>
-                ),
-            }}
-        />
+        <>
+            <form noValidate autoComplete="off">
+                <TextField
+                    variant="standard"
+                    autoComplete="off"
+                    id="review-title"
+                    label={label}
+                    onChange={onSearch}
+                />
+            </form>
+        </>
     )
 };
 
+const Reviews = ({ initialReviews }) => {
 
-const List = ({ recipesList, expandedRecipesList, onToggleIngredients, onEditInstructions, onUpdateInstructions, editedItem }) => {
     return (
-        <>
-            {recipesList.map((item, index) => {
+        <ul>
+            {/* <Typography variant="h6" gutterBottom component="div">
+                Insert Names
+            </Typography> */}
+            {initialReviews.map((item) => {
                 return (
-                    <Grid item>
-                        <Item
-                            item={item}
-                            index={index}
-                            expandedRecipesList={expandedRecipesList}
-                            onToggleIngredients={onToggleIngredients}
-                            onEditInstructions={onEditInstructions}
-                            onUpdateInstructions={onUpdateInstructions}
-                            editedItem={editedItem}
-                        />
-                    </Grid>
-                );
+                    <Card style={{ marginTop: 5, marginBottom: 5 }} variant="outlined">
+                        <CardContent>
+                            <Typography variant="h6" component="div">
+                                <p>
+                                    {"Movie Title: " + item.name}
+                                    <br />
+                                    {"Director: " + item.dname}
+                                    <br />
+                                    {"Review Title: "}
+                                    <b>{item.reviewTitle}</b>
+                                    <br />
+                                    {"User Rating: "}
+                                    <b>{item.reviewScore}</b>
+                                    {"/5"}
+                                    <br />
+                                    {"User Review: "}
+                                    <br />
+                                    {item.reviewContent}
+                                </p>
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                )
             })}
-        </>
-
+        </ul>
     )
 }
 
-const Item = ({ item, expandedRecipesList, onToggleIngredients, onEditInstructions, onUpdateInstructions, editedItem, index }) => {
-    const [instructions, setInstructions] = React.useState(item.instructions);
-
-    const onChangeInstructions = (event) => {
-        setInstructions(event.target.value);
-        //console.log(instructions);
-    }
-
-    const onApplyChanges = () => {
-        onUpdateInstructions(index, instructions);
-    }
-
-    return (
-        <RecipePaper>
-            <Typography
-                style={{ marginBottom: lightTheme.spacing(2) }}
-                variant="h5"
-                gutterTop
-                component="div"
-            >
-                {item.title}
-            </Typography>
-
-            <Typography
-                variant="h6"
-                component="div"
-                style={{ marginTop: lightTheme.spacing(1) }}
-            >
-                Difficulty: {item.difficulty}
-            </Typography>
-
-            {expandedRecipesList.includes(item.recipeID) && (
-                <>
-
-                    <Typography variant="h6" component="div">
-                        Ingredients:
-                    </Typography>
-
-
-                    <ul>
-                        {item.ingredients.map((ingredient) => (
-                            <li>
-                                <Typography variant="body1" >
-                                    {ingredient}
-                                </Typography>
-                            </li>
-                        ))}
-                    </ul>
-
-                </>
-            )}
-
-
-            <RecipeButton
-                item={item}
-                label={expandedRecipesList.includes(item.recipeID) ? 'Hide ingredients' : 'Show ingredients'}
-                onButtonClick={onToggleIngredients}
-            />
-
-
-
-            <Typography
-                variant="h6"
-                component="div"
-                style={{ marginTop: lightTheme.spacing(1) }}
-            >
-                Instructions:
-            </Typography>
-
-            {editedItem != item.recipeID ? (
-                <>
-                    <Typography variant="body1" gutterBottom component="div">
-                        {item.instructions}
-                    </Typography>
-
-                    <RecipeButton
-                        item={item}
-                        label={'Edit instructions'}
-                        onButtonClick={onEditInstructions}
-                    />
-                </>
-            ) : (
-                <>
-                    <Grid container direction="column" justify="flex-start" alignItems="flex-start">
-                        <Grid item>
-                            <TextField
-                                required
-                                id='edit'
-                                onChange={onChangeInstructions}
-                                value={instructions}
-                                style={{ width: 600, marginBottom: lightTheme.spacing(2) }}
-                                multiline
-                            />
-                        </Grid>
-                        <Grid item>
-                            <RecipeButton
-                                item={item}
-                                label={'Save'}
-                                onButtonClick={onApplyChanges}
-                            />
-                        </Grid>
-                    </Grid>
-                </>
-            )}
-
-            <Typography
-                variant="h6"
-                gutterBottom
-                component="div"
-                style={{ marginTop: lightTheme.spacing(1) }}
-            >
-                Calories: {item.calories}
-            </Typography>
-
-        </RecipePaper>
-    )
-}
-
-const RecipeButton = ({ item, label, onButtonClick }) => (
-    <Button
-        variant="contained"
-        color="secondary"
-        onClick={(event) => onButtonClick(item, event)}
-    >
-        {label}
-    </Button>
-)
 
 
 export default App;

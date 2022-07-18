@@ -255,6 +255,11 @@ export default function App() {
         setMovieID(0);
     }
 
+    const clearAll = () => {
+        clear();
+        setInitialReviews([]);
+    }
+
     const handleToClose = () => {
         setOpen(false);
         if (dummy === 33) {
@@ -355,6 +360,9 @@ export default function App() {
                     <Grid container>
                         <Button variant="contained" color="secondary" onClick={handleClickSubmit}>
                             Submit
+                        </Button>
+                        <Button variant="contained" color='secondary' onClick={clearAll}>
+                            Clear
                         </Button>
                         <DialogBox
                             open={open}

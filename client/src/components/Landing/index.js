@@ -14,6 +14,13 @@ const Landing = () => {
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
                         <Button
+                            key='3'
+                            onClick={() => history.push('/search')}
+                            sx={{ my: 2, color: 'white', display: 'block' }}
+                        >
+                            Search
+                        </Button>
+                        <Button
                             key='1'
                             onClick={() => history.push('/reviews')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
@@ -26,13 +33,6 @@ const Landing = () => {
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
                             MyPage
-                        </Button>
-                        <Button
-                            key='3'
-                            onClick={() => history.push('/search')}
-                            sx={{ my: 2, color: 'white', display: 'block' }}
-                        >
-                            Search
                         </Button>
                     </Toolbar>
                 </Container>

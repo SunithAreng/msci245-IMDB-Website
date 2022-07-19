@@ -2,13 +2,9 @@ import * as React from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
 import { createTheme, ThemeProvider, styled } from '@material-ui/core/styles';
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import SearchIcon from '@material-ui/icons/Search';
-import IconButton from "@material-ui/core/IconButton";
-import InputAdornment from '@material-ui/core/InputAdornment';
 import history from '../Navigation/history';
 import AppBar from '@material-ui/core/AppBar';
 import Container from '@material-ui/core/Container';
@@ -41,16 +37,6 @@ const lightTheme = createTheme({
         },
     },
 });
-
-
-const MoviePaper = styled(Paper)(({ theme }) => ({
-    opacity: 0.7,
-    backgroundColor: theme.palette.primary.background,
-    padding: 8,
-    borderRadius: 4,
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2)
-}));
 
 const MainGridContainer = styled(Grid)(({ theme }) => ({
     margin: theme.spacing(4),
@@ -118,7 +104,7 @@ const App = () => {
                     height: '100vh',
                     opacity: opacityValue,
                     overflow: 'scroll',
-                    backgroundImage: `url(https://images.unsplash.com/photo-1572188863110-46d457c9234d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80)`,
+                    backgroundImage: `url(https://images.unsplash.com/photo-1472457897821-70d3819a0e24?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1769&q=80)`,
                     backgroundSize: "cover"
                 }}
             >
@@ -164,12 +150,12 @@ const App = () => {
                         label="Search by Movies"
                         onSearch={handleMovieEntry}
                     />
-
+                    <br />
                     <Search
                         label="Search by Actors"
                         onSearch={handleActorEntry}
                     />
-
+                    <br />
                     <Search
                         label="Search by Directors"
                         onSearch={handleDirectorEntry}
@@ -196,11 +182,12 @@ const Search = ({ label, onSearch }) => {
         <>
             <form noValidate autoComplete="off">
                 <TextField
-                    variant="standard"
+                    variant='outlined'
                     autoComplete="off"
                     id="review-title"
                     label={label}
                     onChange={onSearch}
+                    fullWidth
                 />
             </form>
         </>

@@ -105,25 +105,6 @@ app.post('/api/findMovies', (req, res) => {
 	console.log("actorSearchTerm: ", actorSearchTerm);
 	console.log("directorSearchTerm: ", directorSearchTerm);
 
-/* 
-  ******* Working SQL query example for our task ********
-SELECT r.title, GROUP_CONCAT(i.name) AS ingredients
-FROM ingredient i, recipe r, recipeIngredient ri  
-WHERE r.recipeID = ri.recipeID  
-AND i.ingredientID = ri.ingredientID  
-AND  r.recipeID IN (
-	SELECT ri.recipeID 
-	FROM recipeIngredient ri, ingredient i 
-	WHERE i.ingredientID = ri.ingredientID 
-	AND i.name = 'apple' 
-	AND r.calories <= 500)  
-GROUP BY r.recipeID;
-*/
-
-/* 
-	The GROUP_CONCAT() function in MySQL is used to concatenate data from multiple rows into one field.
-*/
-
 	let sql = `SELECT r.reviewTitle, r.reviewContent, r.reviewScore, r.movies_id, r.user_userID , m.name, CONCAT(d.first_name, " ", d.last_name) AS dname
 	FROM Review r, movies m, directors d, movies_directors ms
 	WHERE r.movies_id = m.id
@@ -131,8 +112,7 @@ GROUP BY r.recipeID;
 	AND ms.director_id = d.id`;
 
 	let data = [];
-	//Since either ingredientSearchTerm or CalorieSearchTerm can be empty, 
-	//we need to add their respective SQL clauses and corresponding data array elements (for '?' placeholders) conditionally.
+	
 	if (movieSearchTerm){
 		sql = sql + ` AND m.name = ?`;
 		data.push(movieSearchTerm);
@@ -144,13 +124,16 @@ GROUP BY r.recipeID;
 	}
 
 	if (actorSearchTerm){
-		sql = sql + ` AND  CONCAT(a.first_name, " ", a.last_name) IN (?)`;
-		data.push(directorSearchTerm);
+		sql = sql + 
+		` 
+		AND r.movies_id IN (
+			SELECT roles.movie_id
+			FROM roles , actors 
+			WHERE roles.actor_id = actors.id
+			AND CONCAT(actors.first_name, " ", actors.last_name) IN (?)
+		)`;
+		data.push(actorSearchTerm);
 	}
-
-	//finally, add the GROUP BY clause to complete our SQL query
-	//sql = sql + ` GROUP BY dname;`
-
 
 	console.log(sql);
 	console.log(data);

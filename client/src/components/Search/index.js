@@ -211,6 +211,11 @@ const Reviews = ({ initialReviews }) => {
                                     <br />
                                     {"Director: " + item.dname}
                                     <br />
+                                    {"Average User Rating: "}
+                                    <b>{item.AverageReview}</b>
+                                    {"/5"}
+                                    <br />
+                                    <br />
                                     {"Review Title: "}
                                     <b>{item.reviewTitle}</b>
                                     <br />

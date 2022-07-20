@@ -179,7 +179,7 @@ export default function App() {
             reviewTitle: reviewTitle,
             reviewContent: userReview,
         }
-        //addReview();
+        // addReview();
         var d = [reviewInfo];
         setInitialReviews(d);
         console.log(reviewInfo);

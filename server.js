@@ -105,9 +105,13 @@ app.post('/api/findMovies', (req, res) => {
 	console.log("actorSearchTerm: ", actorSearchTerm);
 	console.log("directorSearchTerm: ", directorSearchTerm);
 
-	let sql = `SELECT r.reviewTitle, r.reviewContent, r.reviewScore, r.movies_id, r.user_userID , m.name, CONCAT(d.first_name, " ", d.last_name) AS dname
-	FROM Review r, movies m, directors d, movies_directors ms
+	let sql = `SELECT reviewTitle, reviewContent, AverageReview, reviewScore, r.movies_id, r.user_userID , m.name, CONCAT(d.first_name, " ", d.last_name) AS dname
+	FROM Review r, movies m, directors d, movies_directors ms, (select m.id as MoID, Round(avg(r.reviewScore), 1) as AverageReview
+																from movies m, Review r
+																where m.id = r.movies_id
+																group by m.id) AS rtable
 	WHERE r.movies_id = m.id
+	AND rtable.MoID = r.movies_id
 	AND ms.movie_id = r.movies_id
 	AND ms.director_id = d.id`;
 

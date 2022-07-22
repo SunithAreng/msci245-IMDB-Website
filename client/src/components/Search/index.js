@@ -130,7 +130,7 @@ const App = () => {
                                 onClick={() => history.push('/myPage')}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
-                                MyPage
+                                Explore
                             </Button>
                         </Toolbar>
                     </Container>
@@ -195,42 +195,53 @@ const Search = ({ label, onSearch }) => {
 };
 
 const Reviews = ({ initialReviews }) => {
-
+    // console.log(initialReviews);
     return (
         <ul>
-            {/* <Typography variant="h6" gutterBottom component="div">
-                Insert Names
-            </Typography> */}
             {initialReviews.map((item) => {
                 return (
-                    <Card style={{ marginTop: 5, marginBottom: 5 }} variant="outlined">
-                        <CardContent>
-                            <Typography variant="h6" component="div">
-                                <p>
-                                    {"Movie Title: " + item.name}
+                    <>
+                        <Typography variant="h6">
+                            <p>
+                                <b>{"Movie Title: " + item.name}
                                     <br />
                                     {"Director: " + item.dname}
                                     <br />
                                     {"Average User Rating: "}
-                                    <b>{item.AverageReview}</b>
-                                    {"/5"}
-                                    <br />
-                                    <br />
-                                    {"Review Title: "}
-                                    <b>{item.reviewTitle}</b>
-                                    <br />
-                                    {"User Rating: "}
-                                    <b>{item.reviewScore}</b>
-                                    {"/5"}
-                                    <br />
-                                    {"User Review: "}
-                                    <br />
-                                    {item.reviewContent}
-                                </p>
-                            </Typography>
-                        </CardContent>
-                    </Card>
+                                    {item.AverageReview}
+                                    {"/5"}</b>
+                                <br />
+                            </p>
+                        </Typography>
+
+                        <Typography variant="h6" component="div">
+                            <b>Reviews: {item.AverageReview ? "" : "No Reviews Exist"}</b>
+                        </Typography>
+
+                        {item.reviews.map((element) => {
+                            return (
+                                <Card style={{ marginTop: 5, marginBottom: 5 }} variant="outlined" elevation={-10}>
+                                    <CardContent>
+                                        <Typography variant="h6" gutterBottom>
+                                            {"Review Title: "}
+                                            <b>{element.reviewTitle}</b>
+                                            <br />
+                                            {"User Rating: "}
+                                            <b>{element.reviewScore}</b>
+                                            {"/5"}
+                                            <br />
+                                            {"User Review: "}
+                                            <br />
+                                            {element.reviewContent}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            )
+                        })}
+                    </>
                 )
+
+
             })}
         </ul>
     )

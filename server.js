@@ -51,25 +51,6 @@ app.post('/api/getMovies', (req, res) => {
 	connection.end();
 });
 
-app.post('/api/getReviews', (req, res) => {
-	let connection = mysql.createConnection(config);
-
-	let sql = `SELECT r.reviewTitle, r.reviewContent, r.reviewScore, r.movies_id, r.user_userID , m.name
-	FROM Review r, movies m
-	WHERE r.movies_id = m.id`;
-	let data = [];
-
-	connection.query(sql, data, (error, results, fields) => {
-		if (error) {
-			return console.error(error.message);
-		}
-		let string = JSON.stringify(results);
-		let obj = JSON.parse(string);
-		res.send({ express: string });
-	});
-	connection.end();
-});
-
 app.post('/api/addReview', (req, res) => {
 	let connection = mysql.createConnection(config);
 
@@ -105,32 +86,28 @@ app.post('/api/findMovies', (req, res) => {
 	console.log("actorSearchTerm: ", actorSearchTerm);
 	console.log("directorSearchTerm: ", directorSearchTerm);
 
-	let sql = `SELECT reviewTitle, reviewContent, AverageReview, reviewScore, r.movies_id, r.user_userID , m.name, CONCAT(d.first_name, " ", d.last_name) AS dname
-	FROM Review r, movies m, directors d, movies_directors ms, (select m.id as MoID, Round(avg(r.reviewScore), 1) as AverageReview
-																from movies m, Review r
-																where m.id = r.movies_id
-																group by m.id) AS rtable
-	WHERE r.movies_id = m.id
-	AND rtable.MoID = r.movies_id
-	AND ms.movie_id = r.movies_id
+	let sql = `SELECT name, movies_id, dname, AverageReview 
+	FROM (SELECT m.name, CONCAT(d.first_name, " ", d.last_name) AS dname, m.id AS movies_id
+	FROM directors d, movies_directors ms, movies m
+	WHERE ms.movie_id = m.id
 	AND ms.director_id = d.id`;
 
 	let data = [];
-	
-	if (movieSearchTerm){
+
+	if (movieSearchTerm) {
 		sql = sql + ` AND m.name = ?`;
 		data.push(movieSearchTerm);
 	}
 
-	if (directorSearchTerm){
+	if (directorSearchTerm) {
 		sql = sql + ` AND  CONCAT(d.first_name, " ", d.last_name) IN (?)`;
 		data.push(directorSearchTerm);
 	}
 
-	if (actorSearchTerm){
-		sql = sql + 
-		` 
-		AND r.movies_id IN (
+	if (actorSearchTerm) {
+		sql = sql +
+			` 
+		AND m.id IN (
 			SELECT roles.movie_id
 			FROM roles , actors 
 			WHERE roles.actor_id = actors.id
@@ -139,21 +116,77 @@ app.post('/api/findMovies', (req, res) => {
 		data.push(actorSearchTerm);
 	}
 
+	sql = sql + ` ) as atable LEFT OUTER JOIN (SELECT m.id as MoID, ROUND(AVG(r.reviewScore), 1) AS AverageReview
+	FROM movies m, Review r
+	WHERE m.id = r.movies_id
+	group by m.id) AS rtable on movies_id = MoID
+	ORDER BY movies_id;`
+
 	console.log(sql);
 	console.log(data);
+
+	if (!movieSearchTerm && !directorSearchTerm && !actorSearchTerm) {
+		sql = "";
+	}
 
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
 
+		let data1 = [];
+
+		let data2 = [];
+
+		results.map((item) => {
+			data1.push(''+item.movies_id);
+			var d = {
+				id: item.movies_id,
+				name: item.name,
+				AverageReview: item.AverageReview,
+				dname: item.dname,
+				reviews: []
+			}
+			data2.push(d);
+		})
+
 		console.log(results);
 
-		let string = JSON.stringify(results);
-		res.send({ express: string });
-		connection.end();
-	});
+		let MYsql = `SELECT reviewTitle, reviewContent, reviewScore, r.movies_id, r.user_userID , m.name
+				FROM Review r, movies m
+				WHERE r.movies_id = m.id
+				AND r.movies_id IN (?`;
+
+
+		if (data1.length > 0 ) {
+			for (var i =1; i<data1.length; i++ ){
+				MYsql = MYsql + `, ?`
+			}
+		}		
 	
+		MYsql = MYsql + `)`
+
+		connection.query(MYsql, data1, (error, results1, fields) => {
+			if (error) {
+				return console.error(error.message);
+			}
+
+			for (var i = 0; i < data2.length; i++) {
+				results1.map((item) => {
+					if (data2[i].id === item.movies_id) {
+						data2[i].reviews.push(item);
+					}
+				})
+			}
+
+			let string = JSON.stringify(data2);
+			res.send({ express: string });
+			connection.end();
+		});
+
+
+	});
+
 
 });
 

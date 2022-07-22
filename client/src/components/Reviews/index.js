@@ -293,7 +293,7 @@ export default function App() {
                                 onClick={() => history.push('/myPage')}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
-                                MyPage
+                                Explore
                             </Button>
                             <Button
                                 key='1'

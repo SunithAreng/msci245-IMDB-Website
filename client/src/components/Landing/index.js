@@ -65,7 +65,7 @@ const Landing = () => {
                                 onClick={() => history.push('/myPage')}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
-                                MyPage
+                                Explore
                             </Button>
                         </Toolbar>
                     </Container>

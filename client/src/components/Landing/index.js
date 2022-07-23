@@ -9,7 +9,7 @@ import { createTheme, ThemeProvider, styled } from '@material-ui/core/styles';
 import Box from "@material-ui/core/Box";
 import Grid from '@material-ui/core/Grid';
 
-const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
+// const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
 
 const opacityValue = 0.9;
 
@@ -92,7 +92,7 @@ const Landing = () => {
                         Be a critic to your favorite movie!
                     </Typography>
                     <Typography variant="h5" color="inherit">
-                        Or, find out what the critics think about your favorite movies.
+                        Or, find out what the experts think about your favorite movies.
                     </Typography>
                     <br />
                     <Grid container>

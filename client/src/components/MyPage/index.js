@@ -10,9 +10,9 @@ import Box from "@material-ui/core/Box";
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 
-const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
+// const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
 
-// const serverURL = "http://localhost:8081";
+const serverURL = "http://localhost:8081";
 
 const opacityValue = 0.9;
 
@@ -150,6 +150,11 @@ const MyPage = () => {
             <li>Pulp Fiction</li>
             <li>Forrest Gump</li>
             <li>Fight Club</li>
+            <li>12 Angry Men</li>
+            <li>Casino</li>
+            <li>Goodfellas</li>
+            <li>Toy Story</li>
+            <li>Se7en</li>
           </p>
           <br />
           <Grid container>

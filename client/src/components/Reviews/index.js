@@ -25,9 +25,9 @@ import AppBar from '@material-ui/core/AppBar';
 import Container from '@material-ui/core/Container';
 import Toolbar from '@material-ui/core/Toolbar';
 
-const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
+// const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
 
-// const serverURL = "http://localhost:8081";
+const serverURL = "http://localhost:8081";
 
 // const serverURL = "";
 

@@ -12,9 +12,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 
-// const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
+const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
 
-const serverURL = "http://localhost:8081";
+// const serverURL = "http://localhost:8081";
 
 const opacityValue = 0.9;
 

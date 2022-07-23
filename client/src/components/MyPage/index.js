@@ -10,9 +10,9 @@ import Box from "@material-ui/core/Box";
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 
-// const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
+const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
 
-const serverURL = "http://localhost:8081";
+// const serverURL = "http://localhost:8081";
 
 const opacityValue = 0.9;
 
@@ -44,6 +44,35 @@ const MyPage = () => {
 
   const [movieSearchTerm, setMovieSearchTerm] = React.useState('');
   const [moviesList, setMoviesList] = React.useState([]);
+  const [recommendedList, setRecommendedList] = React.useState([]);
+
+  const getRecommendedMovies = () => {
+    callApiGetMovies()
+      .then(res => {
+        var parsed = JSON.parse(res.express);
+        console.log(parsed);
+        setRecommendedList(parsed);
+      })
+  }
+
+  const callApiGetMovies = async () => {
+    const url = serverURL + "/api/getRecommendedMovies";
+    console.log(url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  }
+
+  React.useEffect(() => {
+    getRecommendedMovies();
+  }, []);
 
   const handleSubmit = () => {
     handleMovieSearch();
@@ -163,11 +192,38 @@ const MyPage = () => {
           </Grid>
           <br />
           <Player moviesList={moviesList} />
+          <br>
+
+          </br>
+          <Typography variant="h6" color="inherit">
+            Not sure what to watch? Here is the list of top 5 movies based on highest average rating given by users. Enjoy the show!
+          </Typography>
+          <br />
+          <List recommendedList={recommendedList} />
+          <br />
         </MainGridContainer>
       </Box>
     </ThemeProvider>
   )
 }
+
+const List = ({ recommendedList }) => {
+  return (
+    <>
+      {recommendedList.map((item) => {
+        return (
+          <Typography>
+            <li>{item.name}
+              <br />
+              {" Average User Rating: " + item.AverageReview}</li>
+            <br />
+          </Typography>
+        )
+      })}
+    </>
+  )
+}
+
 
 const Player = ({ moviesList }) => {
   return (

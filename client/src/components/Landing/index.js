@@ -7,6 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import { createTheme, ThemeProvider, styled } from '@material-ui/core/styles';
 import Box from "@material-ui/core/Box";
+import Grid from '@material-ui/core/Grid';
 
 const opacityValue = 0.9;
 
@@ -29,6 +30,10 @@ const lightTheme = createTheme({
         },
     },
 });
+
+const MainGridContainer = styled(Grid)(({ theme }) => ({
+    margin: theme.spacing(4),
+}))
 
 const Landing = () => {
 
@@ -70,9 +75,36 @@ const Landing = () => {
                         </Toolbar>
                     </Container>
                 </AppBar>
-                <Typography variant="h3" color="inherit" noWrap>
-                    Hello and welcome to the landing page!
-                </Typography>
+                <MainGridContainer
+                    container
+                    spacing={5}
+                    style={{ maxWidth: '50%' }}
+                    direction="column"
+                    justify="flex-start"
+                    alignItems="stretch"
+                    overflow="scroll"
+                >
+
+                    <br />
+                    <Typography variant="h3" color="inherit">
+                        Be a critic to your favorite movie!
+                    </Typography>
+                    <Typography variant="h5" color="inherit">
+                        Or, find out what the critics think about your favorite movies.
+                    </Typography>
+                    <br />
+                    <Grid container>
+                        <Button
+                            variant='contained'
+                            key='1'
+                            onClick={() => history.push('/reviews')}
+                            sx={{ my: 2, color: 'white', display: 'block' }}
+                        >
+                            Get Started
+                        </Button>
+                    </Grid>  
+                    
+                </MainGridContainer>
             </Box>
         </ThemeProvider>
     )

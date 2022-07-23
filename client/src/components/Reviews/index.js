@@ -179,7 +179,7 @@ export default function App() {
             reviewTitle: reviewTitle,
             reviewContent: userReview,
         }
-        // addReview();
+        addReview();
         var d = [reviewInfo];
         setInitialReviews(d);
         console.log(reviewInfo);
@@ -187,10 +187,6 @@ export default function App() {
 
     const addReview = () => {
         callApiAddReview()
-            .then(res => {
-                var parsed = JSON.parse(res.express);
-                //setInitialReviews(parsed);
-            })
     }
 
     const callApiAddReview = async () => {
@@ -318,7 +314,7 @@ export default function App() {
                         Movie Review
                     </Typography>
                     <Typography variant="h6" component="div">
-                        Find out what critics think about some of the classics of our time!
+                        Submit a review for a movie. Tell us what you think!
                     </Typography>
                     <Grid container>
                         <MovieSelection
@@ -390,7 +386,7 @@ const Reviews = ({ initialReviews }) => {
                 return (
                     <Card style={{ marginTop: 5, marginBottom: 5 }} variant="outlined">
                         <CardContent>
-                            <Typography variant="h6" component="div">
+                            <Typography variant="h6" component="div" gutterBottom>
                                 <p>
                                     {"Movie Title: " + item.name}
                                     <br />

@@ -12,7 +12,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 
-// const serverURL = "";
+//const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
 
 const serverURL = "http://localhost:8081";
 
@@ -144,8 +144,12 @@ const App = () => {
                     alignItems="stretch"
                 >
                     <Typography variant="h3" gutterBottom component="div">
-                        Movie Finder
+                        Find reviews for your movies:
                     </Typography>
+                    <Typography variant="h6" component="div">
+                        Find out what audiences think about some of the classics of our time!
+                    </Typography>
+                    < br />
                     <Search
                         label="Search by Movies"
                         onSearch={handleMovieEntry}
@@ -164,12 +168,9 @@ const App = () => {
                     <Grid container>
                         <Button variant="contained" color='secondary' onClick={handleSubmit}>Search</Button>
                     </Grid>
-                    <Reviews
+                    {moviesList ? <Reviews
                         initialReviews={moviesList}
-                    />
-
-
-
+                    />: "No Results"}
                 </MainGridContainer>
 
             </Box>
@@ -208,8 +209,8 @@ const Reviews = ({ initialReviews }) => {
                                     {"Director: " + item.dname}
                                     <br />
                                     {"Average User Rating: "}
-                                    {item.AverageReview}
-                                    {"/5"}</b>
+                                    {item.AverageReview ? item.AverageReview+"/5" : "No user scores"}
+                                    </b>
                                 <br />
                             </p>
                         </Typography>

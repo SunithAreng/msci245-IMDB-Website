@@ -6,9 +6,7 @@ import Landing from '../Landing';
 import history from './history';
 import Search from '../Search';
 
-export default function PrivateRoute({
-
-}) {
+export default function PrivateRoute() {
   return (
 
     <Router history={history}>

@@ -77,6 +77,33 @@ app.post('/api/addReview', (req, res) => {
 	});
 });
 
+app.post('/api/findTrailers', (req, res) => {
+	let connection = mysql.createConnection(config);
+	let movieSearchTerm = req.body.movieSearchTerm;
+	let data = [movieSearchTerm];
+
+	let sql = `SELECT mt.* 
+				FROM movies_trailers mt, movies m
+				WHERE m.id = mt.movies_id
+				AND m.name = ?`;
+
+	console.log(sql);
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+		console.log(results);
+
+		let string = JSON.stringify(results);
+		let obj = JSON.parse(string);
+		res.send({ express: string });
+
+		connection.end();
+	});
+});
+
 app.post('/api/findMovies', (req, res) => {
 	let connection = mysql.createConnection(config);
 	let movieSearchTerm = req.body.movieSearchTerm;
@@ -166,6 +193,10 @@ app.post('/api/findMovies', (req, res) => {
 	
 		MYsql = MYsql + `)`
 
+		if (results === []) {
+			MYsql = "";
+		}
+
 		connection.query(MYsql, data1, (error, results1, fields) => {
 			if (error) {
 				return console.error(error.message);
@@ -183,8 +214,6 @@ app.post('/api/findMovies', (req, res) => {
 			res.send({ express: string });
 			connection.end();
 		});
-
-
 	});
 
 

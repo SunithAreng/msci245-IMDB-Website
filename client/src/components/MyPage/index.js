@@ -7,6 +7,13 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import { createTheme, ThemeProvider, styled } from '@material-ui/core/styles';
 import Box from "@material-ui/core/Box";
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import ReactPlayer from 'react-player'
+
+//const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
+
+const serverURL = "http://localhost:8081";
 
 const opacityValue = 0.9;
 
@@ -30,7 +37,52 @@ const lightTheme = createTheme({
   },
 });
 
-const Home = () => {
+const MainGridContainer = styled(Grid)(({ theme }) => ({
+  margin: theme.spacing(4),
+}))
+
+const MyPage = () => {
+
+  const [movieSearchTerm, setMovieSearchTerm] = React.useState('');
+  const [moviesList, setMoviesList] = React.useState([]);
+
+  const handleSubmit = () => {
+    handleMovieSearch();
+  }
+
+  const handleMovieEntry = (event) => {
+    setMovieSearchTerm(event.target.value);
+  }
+
+  const handleMovieSearch = () => {
+    callApiFindMovies()
+      .then(res => {
+        console.log("callApiFindMovies returned: ", res)
+        var parsed = JSON.parse(res.express);
+        console.log("callApiFindMovies parsed: ", parsed[0])
+        setMoviesList(parsed);
+      });
+  }
+
+  const callApiFindMovies = async () => {
+
+    const url = serverURL + "/api/findTrailers";
+    console.log(url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        //authorization: `Bearer ${this.state.token}`
+      },
+      body: JSON.stringify({
+        movieSearchTerm: movieSearchTerm,
+      })
+    });
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  }
 
   return (
     <ThemeProvider theme={lightTheme}>
@@ -70,12 +122,58 @@ const Home = () => {
             </Toolbar>
           </Container>
         </AppBar>
-        <Typography variant="h3" color="inherit" noWrap>
-          This is My Page that needs a lot of work and creativity!
-        </Typography>
+        <MainGridContainer
+          container
+          spacing={5}
+          style={{ maxWidth: '50%' }}
+          direction="column"
+          justify="flex-start"
+          alignItems="stretch"
+          overflow="scroll"
+        >
+          <Typography variant="h3" color="inherit" noWrap>
+            Watch trailers for your movies!
+          </Typography>
+          <br />
+          <Search
+            label="Search for Movies"
+            onSearch={handleMovieEntry}
+          />
+          <br />
+          <Grid container>
+            <Button variant="contained" color='secondary' onClick={handleSubmit}>Search</Button>
+          </Grid>
+          {moviesList ? <Player moviesList={moviesList} />:""}
+        </MainGridContainer>
       </Box>
     </ThemeProvider>
   )
 }
 
-export default Home;
+const Player = ({moviesList}) => {
+  return (
+    <>
+    <ReactPlayer url={moviesList.link} />
+    </>
+  )
+}
+
+const Search = ({ label, onSearch }) => {
+  return (
+    <>
+      <form noValidate autoComplete="off">
+        <TextField
+          variant='outlined'
+          autoComplete="off"
+          id="movie-title"
+          label={label}
+          onChange={onSearch}
+          fullWidth
+        />
+      </form>
+    </>
+  )
+};
+
+
+export default MyPage;

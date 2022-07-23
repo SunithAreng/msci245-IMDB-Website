@@ -9,11 +9,10 @@ import { createTheme, ThemeProvider, styled } from '@material-ui/core/styles';
 import Box from "@material-ui/core/Box";
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import ReactPlayer from 'react-player'
 
-//const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
+const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3032";
 
-const serverURL = "http://localhost:8081";
+// const serverURL = "http://localhost:8081";
 
 const opacityValue = 0.9;
 
@@ -48,6 +47,11 @@ const MyPage = () => {
 
   const handleSubmit = () => {
     handleMovieSearch();
+  }
+
+  const clear = () => {
+    setMovieSearchTerm('');
+    setMoviesList([]);
   }
 
   const handleMovieEntry = (event) => {
@@ -138,27 +142,54 @@ const MyPage = () => {
           <Search
             label="Search for Movies"
             onSearch={handleMovieEntry}
+            movieSearchTerm={movieSearchTerm}
           />
+          <p>The database has trailers only for:
+            <li>Casablanca</li>
+            <li>Saving Private Ryan</li>
+            <li>Pulp Fiction</li>
+            <li>Forrest Gump</li>
+            <li>Fight Club</li>
+          </p>
           <br />
           <Grid container>
             <Button variant="contained" color='secondary' onClick={handleSubmit}>Search</Button>
+            <Button variant="contained" color='secondary' onClick={clear}>Clear</Button>
           </Grid>
-          {moviesList ? <Player moviesList={moviesList} />:""}
+          <br />
+          <Player moviesList={moviesList} />
         </MainGridContainer>
       </Box>
     </ThemeProvider>
   )
 }
 
-const Player = ({moviesList}) => {
+const Player = ({ moviesList }) => {
   return (
-    <>
-    <ReactPlayer url={moviesList.link} />
-    </>
+    <ul>
+      {moviesList.map((item) => {
+        return (
+          <>
+            <iframe
+              width="1000"
+              height="500"
+              src={item.link}
+              frameborder='0'
+              allow='autoplay; encrypted-media'
+              allowfullscreen
+              title='video'
+              allowFullScreen
+            />
+          </>
+        )
+
+      })}
+    </ul>
   )
 }
 
-const Search = ({ label, onSearch }) => {
+
+const Search = ({ label, onSearch, movieSearchTerm }) => {
   return (
     <>
       <form noValidate autoComplete="off">
@@ -167,8 +198,9 @@ const Search = ({ label, onSearch }) => {
           autoComplete="off"
           id="movie-title"
           label={label}
+          value={movieSearchTerm}
           onChange={onSearch}
-          fullWidth
+          style={{ width: 500 }}
         />
       </form>
     </>

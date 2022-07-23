@@ -17,21 +17,21 @@ app.use(express.static(path.join(__dirname, "client/build")));
 // The below code of cors is only needed to run the code on dev mode. My PC does not support the default steps.
 // Hence this work around method was introduced.
 
-var cors = require('cors');
-app.use(cors());
+// var cors = require('cors');
+// app.use(cors());
 
-app.use(function (req, res, next) {
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
-	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+// app.use(function (req, res, next) {
+// 	res.header('Access-Control-Allow-Origin', '*');
+// 	res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
+// 	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
 
-	if ('OPTIONS' === req.method) {
-		res.send(200);
-	}
-	else {
-		next();
-	}
-});
+// 	if ('OPTIONS' === req.method) {
+// 		res.send(200);
+// 	}
+// 	else {
+// 		next();
+// 	}
+// });
 
 app.post('/api/getMovies', (req, res) => {
 	let connection = mysql.createConnection(config);
@@ -241,5 +241,5 @@ app.post('/api/loadUserSettings', (req, res) => {
 	connection.end();
 });
 
-app.listen(8081, () => console.log(`Listening on port ${port}`)); //for the dev version
-// app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server
+// app.listen(8081, () => console.log(`Listening on port ${port}`)); //for the dev version
+app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server

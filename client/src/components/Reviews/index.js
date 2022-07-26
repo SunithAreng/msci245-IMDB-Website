@@ -285,18 +285,25 @@ export default function App() {
                                 Home
                             </Button>
                             <Button
+                                key='3'
+                                onClick={() => history.push('/search')}
+                                sx={{ my: 2, color: 'white', display: 'block' }}
+                            >
+                                Search
+                            </Button>
+                            <Button
+                                key='1'
+                                onClick={() => history.push('/reviews')}
+                                sx={{ my: 2, color: 'white', display: 'block' }}
+                            >
+                                Reviews
+                            </Button>
+                            <Button
                                 key='2'
                                 onClick={() => history.push('/myPage')}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
                                 Explore
-                            </Button>
-                            <Button
-                                key='1'
-                                onClick={() => history.push('/search')}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                            >
-                                Search
                             </Button>
                         </Toolbar>
                     </Container>
@@ -354,10 +361,10 @@ export default function App() {
                     </Grid>
                     <br />
                     <Grid container>
-                        <Button variant="contained" color="secondary" onClick={handleClickSubmit}>
+                        <Button variant="contained" color="secondary" onClick={handleClickSubmit} style={{marginRight: '10px'}}>
                             Submit
                         </Button>
-                        <Button variant="contained" color='secondary' onClick={clearAll}>
+                        <Button variant="contained" color='secondary' onClick={clearAll} style={{marginRight: '10px'}}>
                             Clear
                         </Button>
                         <DialogBox
@@ -367,9 +374,7 @@ export default function App() {
                         />
                     </Grid>
                     <br />
-                    <Typography variant="h6" component="div">
-                        User Submitted Review:
-                    </Typography>
+                    {initialReviews[0] ? <Typography variant="h6" component="div"> User Submitted Review: </Typography> : ""}
                     <Reviews
                         initialReviews={initialReviews}
                     />

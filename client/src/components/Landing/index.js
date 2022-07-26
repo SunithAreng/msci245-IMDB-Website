@@ -46,13 +46,20 @@ const Landing = () => {
                     height: '100vh',
                     opacity: opacityValue,
                     overflow: 'scroll',
-                    backgroundImage: `url(https://images.unsplash.com/photo-1493804714600-6edb1cd93080?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80)`,
+                    backgroundImage: `url(https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1759&q=80)`,
                     backgroundSize: "cover"
                 }}
             >
                 <AppBar position="static">
                     <Container maxWidth="xl">
                         <Toolbar disableGutters>
+                            <Button
+                                key='3'
+                                onClick={() => history.push('/')}
+                                sx={{ my: 2, color: 'white', display: 'block' }}
+                            >
+                                Home
+                            </Button>
                             <Button
                                 key='3'
                                 onClick={() => history.push('/search')}
@@ -101,11 +108,12 @@ const Landing = () => {
                             key='1'
                             onClick={() => history.push('/reviews')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
+                            color='secondary'
                         >
                             Get Started
                         </Button>
-                    </Grid>  
-                    
+                    </Grid>
+
                 </MainGridContainer>
             </Box>
         </ThemeProvider>

@@ -53,6 +53,13 @@ const App = () => {
         handleMovieSearch();
     }
 
+    const clear = () => {
+        setMovieSearchTerm('');
+        setActorSearchTerm('');
+        setDirectorSearchTerm('');
+        setMoviesList([]);
+      }
+
     const handleMovieSearch = () => {
         callApiFindMovies()
             .then(res => {
@@ -119,6 +126,13 @@ const App = () => {
                                 Home
                             </Button>
                             <Button
+                                key='3'
+                                onClick={() => history.push('/search')}
+                                sx={{ my: 2, color: 'white', display: 'block' }}
+                            >
+                                Search
+                            </Button>
+                            <Button
                                 key='1'
                                 onClick={() => history.push('/reviews')}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
@@ -153,24 +167,28 @@ const App = () => {
                     <Search
                         label="Search by Movies"
                         onSearch={handleMovieEntry}
+                        text={movieSearchTerm}
                     />
                     <br />
                     <Search
                         label="Search by Actors"
                         onSearch={handleActorEntry}
+                        text={actorSearchTerm}
                     />
                     <br />
                     <Search
                         label="Search by Directors"
                         onSearch={handleDirectorEntry}
+                        text={directorSearchTerm}
                     />
                     <br />
                     <Grid container>
-                        <Button variant="contained" color='secondary' onClick={handleSubmit}>Search</Button>
+                        <Button variant="contained" color='secondary' onClick={handleSubmit} style={{marginRight: '10px'}}>Search</Button>
+                        <Button variant="contained" color='secondary' onClick={clear} style={{marginRight: '10px'}}>Clear</Button>
                     </Grid>
                     {moviesList ? <Reviews
                         initialReviews={moviesList}
-                    />: "No Results"}
+                    /> : "No Results"}
                 </MainGridContainer>
 
             </Box>
@@ -178,7 +196,7 @@ const App = () => {
     );
 }
 
-const Search = ({ label, onSearch }) => {
+const Search = ({ label, onSearch, text }) => {
     return (
         <>
             <form noValidate autoComplete="off">
@@ -188,6 +206,7 @@ const Search = ({ label, onSearch }) => {
                     id="review-title"
                     label={label}
                     onChange={onSearch}
+                    value={text}
                     fullWidth
                 />
             </form>
@@ -209,8 +228,8 @@ const Reviews = ({ initialReviews }) => {
                                     {"Director: " + item.dname}
                                     <br />
                                     {"Average User Rating: "}
-                                    {item.AverageReview ? item.AverageReview+"/5" : "No user scores"}
-                                    </b>
+                                    {item.AverageReview ? item.AverageReview + "/5" : "No user scores"}
+                                </b>
                                 <br />
                             </p>
                         </Typography>
